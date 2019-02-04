@@ -177,4 +177,9 @@ public class LauncherAppState {
     public static boolean isDogfoodBuild() {
         return getInstance().mBuildInfo.isDogfoodBuild();
     }
+    //modify add start 修改单层桌面 添加总开关
+    public static boolean isDisableAllApps() {
+        return true;
+    }
+    //modify add end
 }

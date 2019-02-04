@@ -3272,7 +3272,16 @@ public class Workspace extends PagedView
                 false);
         if (mDragMode == DRAG_MODE_NONE && userFolderPending &&
                 !mFolderCreationAlarm.alarmPending()) {
-
+            //modify add start 取消在hostset生成文件夹功能
+            CellLayout dropTargetLayout = (CellLayout) targetLayout;
+            boolean hasMovedIntoHotseat = mLauncher.isHotseatLayout(dropTargetLayout);
+            long container = hasMovedIntoHotseat ?
+                    LauncherSettings.Favorites.CONTAINER_HOTSEAT :
+                    LauncherSettings.Favorites.CONTAINER_DESKTOP;
+            if(container==-101){
+                return ;
+            }
+            //modify add end
             FolderCreationAlarmListener listener = new
                     FolderCreationAlarmListener(targetLayout, targetCell[0], targetCell[1]);
 

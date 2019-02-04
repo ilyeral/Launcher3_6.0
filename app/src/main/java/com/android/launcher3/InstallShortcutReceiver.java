@@ -202,6 +202,10 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
                 final PendingInstallShortcutInfo pendingInfo = iter.next();
                 final Intent intent = pendingInfo.launchIntent;
 
+                if (LauncherAppState.isDisableAllApps() && !isValidShortcutLaunchIntent(intent)) {
+                    if (DBG) Log.d(TAG, "Ignoring shortcut with launchIntent:" + intent);
+                    continue;
+                }
                 // If the intent specifies a package, make sure the package exists
                 String packageName = pendingInfo.getTargetPackage();
                 if (!TextUtils.isEmpty(packageName)) {
@@ -223,7 +227,29 @@ public class InstallShortcutReceiver extends BroadcastReceiver {
             }
         }
     }
-
+    /**
+     * Returns true if the intent is a valid launch intent for a shortcut.
+     * This is used to identify shortcuts which are different from the ones exposed by the
+     * applications' manifest file.
+     *
+     * When DISABLE_ALL_APPS is true, shortcuts exposed via the app's manifest should never be
+     * duplicated or removed(unless the app is un-installed).
+     *
+     * @param launchIntent The intent that will be launched when the shortcut is clicked.
+     */
+    static boolean isValidShortcutLaunchIntent(Intent launchIntent) {
+        if (launchIntent != null
+                && Intent.ACTION_MAIN.equals(launchIntent.getAction())
+                && launchIntent.getComponent() != null
+                && launchIntent.getCategories() != null
+                && launchIntent.getCategories().size() == 1
+                && launchIntent.hasCategory(Intent.CATEGORY_LAUNCHER)
+                && launchIntent.getExtras() == null
+                && TextUtils.isEmpty(launchIntent.getDataString())) {
+            return false;
+        }
+        return true;
+    }
     /**
      * Ensures that we have a valid, non-null name.  If the provided name is null, we will return
      * the application name instead.

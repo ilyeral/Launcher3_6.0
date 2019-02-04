@@ -2716,13 +2716,21 @@ public class CellLayout extends ViewGroup implements BubbleTextShadowHandler {
     }
 
     public int getDesiredWidth() {
-        return getPaddingLeft() + getPaddingRight() + (mCountX * mCellWidth) +
-                (Math.max((mCountX - 1), 0) * mWidthGap);
+        return getPaddingLeft() + getPaddingRight() + (3 * mCellWidth) +
+                (Math.max((3 - 1), 0) * mWidthGap);
     }
 
     public int getDesiredHeight()  {
         return getPaddingTop() + getPaddingBottom() + (mCountY * mCellHeight) +
                 (Math.max((mCountY - 1), 0) * mHeightGap);
+    }
+    //modify add 返回三行高度
+    public int getThreeIconHeidth() {
+        //modify  设置文件夹高度
+        //return getPaddingLeft() + getPaddingRight() + (mCountX * mCellWidth) +
+        //        (Math.max((mCountX - 1), 0) * mWidthGap);
+        return getPaddingTop() + getPaddingBottom() + (3 * mCellHeight) +
+                (Math.max((3 - 1), 0) * mHeightGap);
     }
 
     public boolean isOccupied(int x, int y) {

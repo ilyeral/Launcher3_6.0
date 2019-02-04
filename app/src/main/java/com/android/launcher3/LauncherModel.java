@@ -1080,7 +1080,7 @@ public class LauncherModel extends BroadcastReceiver
     /**
      * Removes the specified items from the database
      * @param context
-     * @param item
+     * @param items
      */
     static void deleteItemsFromDatabase(Context context, final ArrayList<? extends ItemInfo> items) {
         final ContentResolver cr = context.getContentResolver();
@@ -1557,6 +1557,11 @@ public class LauncherModel extends BroadcastReceiver
                 // second step
                 if (DEBUG_LOADERS) Log.d(TAG, "step 2: loading all apps");
                 loadAndBindAllApps();
+                //modify add start 修改单层桌面
+                if (LauncherAppState.isDisableAllApps()) {
+                    verifyApplications();
+                }
+                //modify add end
             }
 
             // Clear out this reference, otherwise we end up holding it until all of the
@@ -1572,7 +1577,29 @@ public class LauncherModel extends BroadcastReceiver
                 mHasLoaderCompletedOnce = true;
             }
         }
+        //modify add start 修改单层桌面
+        private void verifyApplications() {
+            final Context context = mApp.getContext();
 
+            // Cross reference all the applications in our apps list with items in the workspace
+            ArrayList<ItemInfo> tmpInfos;
+            ArrayList<ItemInfo> added = new ArrayList<ItemInfo>();
+            synchronized (sBgLock) {
+                for (AppInfo app : mBgAllAppsList.data) {
+                    tmpInfos = getItemInfoForComponentName(app.componentName, app.user);
+                    if (tmpInfos.isEmpty()) {
+                        // We are missing an application icon, so add this to the workspace
+                        added.add(app);
+                        // This is a rare event, so lets log it
+                        Log.e(TAG, "Missing Application on load: " + app);
+                    }
+                }
+            }
+            if (!added.isEmpty()) {
+                addAndBindAddedWorkspaceItems(context, added);//7.0 虽然去掉了去抽屉的代码，但留了这个方法给我们。
+            }
+        }
+        //modify add end
         public void stopLocked() {
             synchronized (LoaderTask.this) {
                 mStopped = true;
@@ -3079,7 +3106,15 @@ public class LauncherModel extends BroadcastReceiver
                     new HashMap<ComponentName, AppInfo>();
 
             if (added != null) {
-                addAppsToAllApps(context, added);
+                //modify add start 修改单层桌面
+                if(LauncherAppState.isDisableAllApps()){
+                    final ArrayList<ItemInfo> addedInfos = new ArrayList<ItemInfo>(added);
+                    addAndBindAddedWorkspaceItems(context, addedInfos);
+                }else {
+                //modify add end
+                    addAppsToAllApps(context, added);
+                //modify add
+                }
                 for (AppInfo ai : added) {
                     addedOrUpdatedApps.put(ai.componentName, ai);
                 }

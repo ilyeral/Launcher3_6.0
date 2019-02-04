@@ -241,9 +241,9 @@ public class DeviceProfile {
     /** Returns the search bar top offset */
     private int getSearchBarTopOffset() {
         if (isTablet && !isVerticalBarLayout()) {
-            return 4 * edgeMarginPx;
+            return 0;
         } else {
-            return 2 * edgeMarginPx;
+            return 0;
         }
     }
 
@@ -414,7 +414,7 @@ public class DeviceProfile {
         lp.gravity = Gravity.CENTER;
         Rect padding = getWorkspacePadding(isLayoutRtl);
         workspace.setLayoutParams(lp);
-        workspace.setPadding(padding.left, padding.top, padding.right, padding.bottom);
+        workspace.setPadding(padding.left, 20, padding.right, padding.bottom);
         workspace.setPageSpacing(getWorkspacePageSpacing(isLayoutRtl));
 
         // Layout the hotseat
@@ -441,8 +441,9 @@ public class DeviceProfile {
             lp.gravity = Gravity.BOTTOM;
             lp.width = LayoutParams.MATCH_PARENT;
             lp.height = hotseatBarHeightPx;
-            hotseat.findViewById(R.id.layout).setPadding(2 * edgeMarginPx, 0,
-                    2 * edgeMarginPx, 0);
+            //modify 设置hostset padding 以修改整体宽度
+            hotseat.findViewById(R.id.layout).setPadding(2 * edgeMarginPx-18, 0,
+                    2 * edgeMarginPx-18, 0);
         }
         hotseat.setLayoutParams(lp);
 

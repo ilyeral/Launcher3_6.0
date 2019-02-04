@@ -29,6 +29,7 @@ import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.app.WallpaperManager;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
@@ -53,6 +54,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -958,6 +960,7 @@ public class Launcher extends Activity
         if (mLauncherCallbacks != null) {
             mLauncherCallbacks.onStart();
         }
+        setStateBarTextColor();
     }
 
     @Override
@@ -1417,7 +1420,7 @@ public class Launcher extends Activity
         // Get the search/delete bar
         mSearchDropTargetBar = (SearchDropTargetBar)
                 mDragLayer.findViewById(R.id.search_drop_target_bar);
-
+        mSearchDropTargetBar.setmLauncher(this);
         // Setup Apps and Widgets
         mAppsView = (AllAppsContainerView) findViewById(R.id.apps_view);
         mWidgetsView = (WidgetsContainerView) findViewById(R.id.widgets_view);
@@ -3094,6 +3097,11 @@ public class Launcher extends Activity
         // the workspace items
         folder.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
         getDragLayer().sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+        //modify add start 打开文件夹隐藏背景
+        getWorkspace().setVisibility(View.GONE);
+        getWorkspace().getPageIndicator().setVisibility(View.GONE);
+        getHotseat().setVisibility(View.GONE);
+        //modify add end
     }
 
     public void closeFolder() {
@@ -3122,6 +3130,11 @@ public class Launcher extends Activity
         // Notify the accessibility manager that this folder "window" has disappeard and no
         // longer occludeds the workspace items
         getDragLayer().sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
+        //modify add start  关闭文件夹显示背景
+        getWorkspace().setVisibility(View.VISIBLE);
+        getWorkspace().getPageIndicator().setVisibility(View.VISIBLE);
+        getHotseat().setVisibility(View.VISIBLE);
+        //modify add end
     }
 
     public boolean onLongClick(View v) {
@@ -3221,16 +3234,16 @@ public class Launcher extends Activity
     }
 
     private void setWorkspaceBackground(int background) {
-        switch (background) {
-            case WORKSPACE_BACKGROUND_TRANSPARENT:
-                getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                break;
-            case WORKSPACE_BACKGROUND_BLACK:
-                getWindow().setBackgroundDrawable(null);
-                break;
-            default:
-                getWindow().setBackgroundDrawable(mWorkspaceBackgroundDrawable);
-        }
+//        switch (background) {
+//            case WORKSPACE_BACKGROUND_TRANSPARENT:
+//                getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//                break;
+//            case WORKSPACE_BACKGROUND_BLACK:
+//                getWindow().setBackgroundDrawable(null);
+//                break;
+//            default:
+//                getWindow().setBackgroundDrawable(mWorkspaceBackgroundDrawable);
+//        }
     }
 
     protected void changeWallpaperVisiblity(boolean visible) {
@@ -4717,6 +4730,70 @@ public class Launcher extends Activity
                     return null;
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
+        }
+    }
+    //modify add 状态栏控制
+    //true隐藏，false显示 状态栏
+    public void hideStausbar(boolean enable) {
+        if (enable) {
+            mLauncherView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+
+        } else {
+            mLauncherView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        }
+    }
+    //modify add 不同背景下状态栏颜色适应
+    //获取当前壁纸顶部颜色，浅色返回1 深色返回-1 混杂返回0
+    public int getWallpaperColor(){
+        // 获取壁纸管理器
+        WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
+        // 获取当前壁纸
+        Drawable wallpaperDrawable = wallpaperManager.getDrawable();
+        // 将Drawable,转成Bitmap
+        Bitmap bmp = ((BitmapDrawable) wallpaperDrawable).getBitmap();
+        int width = bmp.getWidth();
+        int color_1=bmp.getPixel(width/12, 10);
+        int color_2=bmp.getPixel(width/12*11, 10);
+//        int color_3=bmp.getPixel(width/6*5, 10);
+//        int color_4=bmp.getPixel(width/2, 10);
+//        int color_5=bmp.getPixel(width/6, 10);
+
+        if(color_1>=-8000000&&color_2>=-8000000){
+            //背景色亮，设置黑的
+            //Log.e("Color"," 背景色亮，设置黑的");
+            return 1;
+        }
+        if(color_1<=-8000000&&color_2<=-8000000){
+            //背景色暗，设置亮的
+            //Log.e("Color"," 背景色暗，设置亮的");
+            return -1;
+        }
+        if((color_1>-8000000&&color_2<-8000000)||(color_1<-8000000&&color_2>-8000000)){
+            //背景掺杂，设置灰的
+            //Log.e("Color"," 背景掺杂，设置灰的");
+            return 0;
+        }
+
+        return 0;
+    }
+    //modify add 不同背景下状态栏颜色适应
+    public void setStateBarTextColor(){
+        int color = getWallpaperColor();
+        switch (color){
+            case 1:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                    mLauncherView.setBackground(null);
+                }
+                break;
+            case -1:
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+                mLauncherView.setBackground(null);
+                break;
+            case 0:
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+                mLauncherView.setBackground(mWorkspaceBackgroundDrawable);
+                break;
         }
     }
 }

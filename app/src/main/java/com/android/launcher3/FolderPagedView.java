@@ -87,9 +87,11 @@ public class FolderPagedView extends PagedView {
         LauncherAppState app = LauncherAppState.getInstance();
 
         InvariantDeviceProfile profile = app.getInvariantDeviceProfile();
-        mMaxCountX = profile.numFolderColumns;
-        mMaxCountY = profile.numFolderRows;
-
+        //modify  文件夹内文件个数
+//        mMaxCountX = profile.numFolderColumns;
+//        mMaxCountY = profile.numFolderRows;
+        mMaxCountX = 3;
+        mMaxCountY = 3;
         mMaxItemsPerPage = mMaxCountX * mMaxCountY;
 
         mInflater = LayoutInflater.from(context);
@@ -124,24 +126,32 @@ public class FolderPagedView extends PagedView {
             done = false;
         }
 
-        while (!done) {
-            int oldCountX = mGridCountX;
-            int oldCountY = mGridCountY;
-            if (mGridCountX * mGridCountY < count) {
-                // Current grid is too small, expand it
-                if ((mGridCountX <= mGridCountY || mGridCountY == mMaxCountY) && mGridCountX < mMaxCountX) {
-                    mGridCountX++;
-                } else if (mGridCountY < mMaxCountY) {
-                    mGridCountY++;
-                }
-                if (mGridCountY == 0) mGridCountY++;
-            } else if ((mGridCountY - 1) * mGridCountX >= count && mGridCountY >= mGridCountX) {
-                mGridCountY = Math.max(0, mGridCountY - 1);
-            } else if ((mGridCountX - 1) * mGridCountY >= count) {
-                mGridCountX = Math.max(0, mGridCountX - 1);
-            }
-            done = mGridCountX == oldCountX && mGridCountY == oldCountY;
+        //modify 使文件夹内图标在四个时不再是 2 2 而是3 1
+        if(count >3){
+            mGridCountX = 3;
+            mGridCountY = count-1/3+1;
+        }else{
+            mGridCountX = 3;
+            mGridCountY =1 ;
         }
+//        while (!done) {
+//            int oldCountX = mGridCountX;
+//            int oldCountY = mGridCountY;
+//            if (mGridCountX * mGridCountY < count) {
+//                // Current grid is too small, expand it
+//                if ((mGridCountX <= mGridCountY || mGridCountY == mMaxCountY) && mGridCountX < mMaxCountX) {
+//                    mGridCountX++;
+//                } else if (mGridCountY < mMaxCountY) {
+//                    mGridCountY++;
+//                }
+//                if (mGridCountY == 0) mGridCountY++;
+//            } else if ((mGridCountY - 1) * mGridCountX >= count && mGridCountY >= mGridCountX) {
+//                mGridCountY = Math.max(0, mGridCountY - 1);
+//            } else if ((mGridCountX - 1) * mGridCountY >= count) {
+//                mGridCountX = Math.max(0, mGridCountX - 1);
+//            }
+//            done = mGridCountX == oldCountX && mGridCountY == oldCountY;
+//        }
 
         // Update grid size
         for (int i = getPageCount() - 1; i >= 0; i--) {
@@ -362,12 +372,18 @@ public class FolderPagedView extends PagedView {
         return getPageCount() > 0 ?
                 (getPageAt(0).getDesiredWidth() + getPaddingLeft() + getPaddingRight()) : 0;
     }
-
     public int getDesiredHeight()  {
         return  getPageCount() > 0 ?
                 (getPageAt(0).getDesiredHeight() + getPaddingTop() + getPaddingBottom()) : 0;
     }
-
+    //modify add start 返回三个图标高度
+    public int getThreeIconHeidth() {
+        //modify  设置文件夹高度
+        //return getPaddingLeft() + getPaddingRight() + (mCountX * mCellWidth) +
+        //        (Math.max((mCountX - 1), 0) * mWidthGap);
+        return getPageCount() > 0 ?
+                (getPageAt(0).getThreeIconHeidth() + getPaddingLeft() + getPaddingRight()) : 0;
+    }
     public int getItemCount() {
         int lastPageIndex = getChildCount() - 1;
         if (lastPageIndex < 0) {

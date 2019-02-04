@@ -973,9 +973,10 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
                 sTempRect.left + sTempRect.width() - width);
         int top = Math.min(Math.max(sTempRect.top, centeredTop),
                 sTempRect.top + sTempRect.height() - height);
-        if (grid.isPhone && (grid.availableWidthPx - width) < grid.iconSizePx) {
+        if (grid.isPhone/*modify** && (grid.availableWidthPx - width) < grid.iconSizePx*/) {
             // Center the folder if it is full (on phones only)
             left = (grid.availableWidthPx - width) / 2;
+            top = (grid.availableHeightPx - height) / 2;
         } else if (width >= sTempRect.width()) {
             // If the folder doesn't fit within the bounds, center it about the desired bounds
             left = sTempRect.left + (sTempRect.width() - width) / 2;
@@ -1014,10 +1015,13 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
                 mFooterHeight;
         int height = Math.min(maxContentAreaHeight,
                 mContent.getDesiredHeight());
-        return Math.max(height, MIN_CONTENT_DIMEN);
+        //modify 固定3行
+        //return Math.max(height, MIN_CONTENT_DIMEN);
+        return mContent.getThreeIconHeidth();//固定3行
     }
 
     private int getContentAreaWidth() {
+        //modify 固定3列
         return Math.max(mContent.getDesiredWidth(), MIN_CONTENT_DIMEN);
     }
 

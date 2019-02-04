@@ -33,7 +33,8 @@ import java.util.Comparator;
 public class InvariantDeviceProfile {
 
     // This is a static that we use for the default icon size on a 4/5-inch phone
-    private static float DEFAULT_ICON_SIZE_DP = 60;
+    //modify 设置图标大小
+    private static float DEFAULT_ICON_SIZE_DP = 55;
 
     private static final float ICON_SIZE_DEFINED_IN_APP_DP = 48;
 
@@ -83,6 +84,8 @@ public class InvariantDeviceProfile {
 
     DeviceProfile landscapeProfile;
     DeviceProfile portraitProfile;
+    //modify add 修改单层桌面
+    private boolean hasDA = LauncherAppState.isDisableAllApps();
 
     InvariantDeviceProfile() {
     }
@@ -97,7 +100,7 @@ public class InvariantDeviceProfile {
     InvariantDeviceProfile(String n, float w, float h, int r, int c, int fr, int fc, int maapc,
             float is, float its, float hs, float his, int dlId) {
         // Ensure that we have an odd number of hotseat items (since we need to place all apps)
-        if (hs % 2 == 0) {
+        if (hs % 2 == 0&& !hasDA) {
             throw new RuntimeException("All Device Profiles must have an odd number of hotseat spaces");
         }
 
@@ -178,15 +181,15 @@ public class InvariantDeviceProfile {
         predefinedDeviceProfiles.add(new InvariantDeviceProfile("Shorter Stubby",
                 255, 400,     3, 3, 3, 3, 3, 48, 13, 3, 48, R.xml.default_workspace_4x4));
         predefinedDeviceProfiles.add(new InvariantDeviceProfile("Short Stubby",
-                275, 420,     3, 4, 3, 4, 4, 48, 13, 5, 48, R.xml.default_workspace_4x4));
+                275, 420,     3, 4, 3, 4, 4, 48, 13, (hasDA ? 4 : 5), 48, (hasDA ? R.xml.default_workspace_4x4_no_all_apps : R.xml.default_workspace_4x4 )));
         predefinedDeviceProfiles.add(new InvariantDeviceProfile("Stubby",
-                255, 450,     3, 4, 3, 4, 4, 48, 13, 5, 48, R.xml.default_workspace_4x4));
+                255, 450,     3, 4, 3, 4, 4, 48, 13, (hasDA ? 4 : 5), 48, (hasDA ? R.xml.default_workspace_4x4_no_all_apps : R.xml.default_workspace_4x4 )));
         predefinedDeviceProfiles.add(new InvariantDeviceProfile("Nexus S",
-                296, 491.33f, 4, 4, 4, 4, 4, 48, 13, 5, 48, R.xml.default_workspace_4x4));
+                296, 491.33f, 5, 4, 4, 4, 4, 48, 13,(hasDA ? 4 : 5), 48, (hasDA ? R.xml.default_workspace_4x4_no_all_apps : R.xml.default_workspace_4x4 )));
         predefinedDeviceProfiles.add(new InvariantDeviceProfile("Nexus 4",
-                335, 567,     4, 4, 4, 4, 4, DEFAULT_ICON_SIZE_DP, 13, 5, 56, R.xml.default_workspace_4x4));
+                335, 567,     5, 4, 4, 4, 4, DEFAULT_ICON_SIZE_DP, 13, (hasDA ? 4 : 5), 56, (hasDA ? R.xml.default_workspace_4x4_no_all_apps : R.xml.default_workspace_4x4 )));
         predefinedDeviceProfiles.add(new InvariantDeviceProfile("Nexus 5",
-                359, 567,     4, 4, 4, 4, 4, DEFAULT_ICON_SIZE_DP, 13, 5, 56, R.xml.default_workspace_4x4));
+                359, 567,     5, 4, 4, 4, 4, DEFAULT_ICON_SIZE_DP, 13,(hasDA ? 4 : 5), 56, (hasDA ? R.xml.default_workspace_4x4_no_all_apps : R.xml.default_workspace_4x4 )));
         predefinedDeviceProfiles.add(new InvariantDeviceProfile("Large Phone",
                 406, 694,     5, 5, 4, 4, 4, 64, 14.4f,  5, 56, R.xml.default_workspace_5x5));
         // The tablet profile is odd in that the landscape orientation
@@ -199,6 +202,7 @@ public class InvariantDeviceProfile {
         predefinedDeviceProfiles.add(new InvariantDeviceProfile("20-inch Tablet",
                 1527, 2527,   7, 7, 6, 6, 4, 100, 20,  7, 72, R.xml.default_workspace_4x4));
         return predefinedDeviceProfiles;
+
     }
 
     private int getLauncherIconDensity(int requiredSize) {

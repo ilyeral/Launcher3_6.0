@@ -938,7 +938,8 @@ public class DragLayer extends InsettableFrameLayout {
 
         // We want to draw the page hints above the workspace, but below the drag view.
         if (child instanceof Workspace) {
-            drawPageHints(canvas);
+            //modify 取消长按图标 屏幕两边的框
+            //drawPageHints(canvas);
         }
         return ret;
     }

@@ -75,12 +75,17 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
     private ButtonDropTarget mDeleteDropTarget;
     private ButtonDropTarget mUninstallDropTarget;
 
+    private Launcher mLauncher;
+
     public SearchDropTargetBar(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
     public SearchDropTargetBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+    public void setmLauncher(Launcher mLauncher){
+        this.mLauncher=mLauncher;
     }
 
     public void setup(Launcher launcher, DragController dragController) {
@@ -98,6 +103,8 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
         mInfoDropTarget.setLauncher(launcher);
         mDeleteDropTarget.setLauncher(launcher);
         mUninstallDropTarget.setLauncher(launcher);
+        //modify add 搜索栏上移
+        this.setTranslationY(-80);
     }
 
     @Override
@@ -207,6 +214,7 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
     @Override
     public void onDragStart(DragSource source, Object info, int dragAction) {
         animateToState(State.DROP_TARGET, DEFAULT_DRAG_FADE_DURATION);
+        mLauncher.hideStausbar(true);
     }
 
     /**
@@ -221,8 +229,10 @@ public class SearchDropTargetBar extends FrameLayout implements DragController.D
     public void onDragEnd() {
         if (!mDeferOnDragEnd) {
             animateToState(State.SEARCH_BAR, DEFAULT_DRAG_FADE_DURATION);
+            mLauncher.hideStausbar(false);
         } else {
             mDeferOnDragEnd = false;
+            mLauncher.hideStausbar(false);
         }
     }
 

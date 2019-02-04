@@ -276,8 +276,9 @@ public class WorkspaceStateTransitionAnimation {
         }
 
         // Update the workspace state
+        //modify 调整overview模式celllayout透明度
         float finalBackgroundAlpha = (states.stateIsSpringLoaded || states.stateIsOverview) ?
-                1.0f : 0f;
+                0.25f : 0f;
         float finalHotseatAndPageIndicatorAlpha = (states.stateIsNormal || states.stateIsSpringLoaded) ?
                 1f : 0f;
         float finalOverviewPanelAlpha = states.stateIsOverview ? 1f : 0f;
