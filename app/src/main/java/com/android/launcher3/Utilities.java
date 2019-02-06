@@ -44,9 +44,12 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Process;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -57,6 +60,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -212,7 +218,7 @@ public final class Utilities {
             int textureWidth = iconBitmapSize;
             int textureHeight = iconBitmapSize;
 
-            final Bitmap bitmap = Bitmap.createBitmap(textureWidth, textureHeight,
+            Bitmap bitmap = Bitmap.createBitmap(textureWidth, textureHeight,
                     Bitmap.Config.ARGB_8888);
             final Canvas canvas = sCanvas;
             canvas.setBitmap(bitmap);
@@ -237,10 +243,28 @@ public final class Utilities {
             icon.setBounds(sOldBounds);
             canvas.setBitmap(null);
 
+            bitmap=IconUtilities.IconFormat(bitmap);
+            Log.e("hight",""+IconUtilities.getOpaque(bitmap).hight);//图片宽度
             return bitmap;
         }
     }
-
+    public static void saveBitmap(Bitmap bitmap,String name) {
+        // 首先保存图片
+        File appDir = new File(Environment.getExternalStorageDirectory(),name);
+        if (!appDir.exists()) {
+            appDir.mkdir();
+        }
+        String fileName = "zxing_image" + ".png";
+        File file = new File(appDir, fileName);
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * Given a coordinate relative to the descendant, find the coordinate in a parent view's
      * coordinates.

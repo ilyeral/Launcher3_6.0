@@ -47,6 +47,15 @@ public class DeleteDropTarget extends ButtonDropTarget {
     }
 
     public static boolean supportsDrop(Object info) {
+        //modify add start取消删除图标按钮
+        if (LauncherAppState.isDisableAllApps()) {
+            if (info instanceof ShortcutInfo) {
+                ShortcutInfo item = (ShortcutInfo) info;
+                return item.itemType != LauncherSettings.BaseLauncherColumns.ITEM_TYPE_APPLICATION;
+            }
+            return info instanceof LauncherAppWidgetInfo;
+        }
+        //modify add end
         return (info instanceof ShortcutInfo)
                 || (info instanceof LauncherAppWidgetInfo)
                 || (info instanceof FolderInfo);

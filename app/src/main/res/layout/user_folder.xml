@@ -67,7 +67,7 @@
             android:paddingBottom="8dp"
             android:paddingTop="4dp"
             android:singleLine="true"
-            android:textColor="#ff777777"
+            android:textColor="#ffeeeeee"
             android:textColorHighlight="#ffCCCCCC"
             android:textColorHint="#ff808080"
             android:textSize="14sp" />

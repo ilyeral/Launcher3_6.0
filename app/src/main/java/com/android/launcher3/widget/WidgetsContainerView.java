@@ -242,7 +242,7 @@ public class WidgetsContainerView extends BaseContainerView
         } else {
             PendingAddShortcutInfo createShortcutInfo = (PendingAddShortcutInfo) v.getTag();
             Drawable icon = mIconCache.getFullResIcon(createShortcutInfo.activityInfo);
-            preview = Utilities.createIconBitmap(icon, mLauncher);
+            preview = Utilities.createIconBitmap(icon, mLauncher);Log.e("W","245");
             createItemInfo.spanX = createItemInfo.spanY = 1;
             scale = ((float) mLauncher.getDeviceProfile().iconSizePx) / preview.getWidth();
         }

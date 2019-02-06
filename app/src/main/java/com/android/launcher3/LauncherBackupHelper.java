@@ -1018,7 +1018,7 @@ public class LauncherBackupHelper implements BackupHelper {
         if (info.icon != 0) {
             widget.icon = new Resource();
             Drawable fullResIcon = mIconCache.getFullResIcon(provider.getPackageName(), info.icon);
-            Bitmap icon = Utilities.createIconBitmap(fullResIcon, mContext);
+            Bitmap icon = Utilities.createIconBitmap(fullResIcon, mContext);Log.e("L","1021");
             widget.icon.data = Utilities.flattenBitmap(icon);
             widget.icon.dpi = dpi;
         }
