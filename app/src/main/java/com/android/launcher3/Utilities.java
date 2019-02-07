@@ -44,12 +44,10 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Process;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -59,9 +57,10 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.launcher3.util.IconUtilities;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -243,7 +242,7 @@ public final class Utilities {
             icon.setBounds(sOldBounds);
             canvas.setBitmap(null);
 
-            bitmap=IconUtilities.IconFormat(bitmap);
+            bitmap= IconUtilities.IconFormat(bitmap);
             Log.e("hight",""+IconUtilities.getOpaque(bitmap).hight);//图片宽度
             return bitmap;
         }

@@ -1,4 +1,4 @@
-package com.android.launcher3;
+package com.android.launcher3.util;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

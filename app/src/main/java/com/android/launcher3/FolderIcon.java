@@ -60,7 +60,9 @@ public class FolderIcon extends FrameLayout implements FolderListener {
     private StylusEventHelper mStylusEventHelper;
 
     // The number of icons to display in the
-    public static final int NUM_ITEMS_IN_PREVIEW = 3;
+    //modify 九宫格图标 图标个数
+    //private static final int NUM_ITEMS_IN_PREVIEW = 3;
+    public static final int NUM_ITEMS_IN_PREVIEW = 9;
     private static final int CONSUMPTION_ANIMATION_DURATION = 100;
     private static final int DROP_IN_ANIMATION_DURATION = 400;
     private static final int INITIAL_ITEM_ANIMATION_DURATION = 350;
@@ -73,7 +75,9 @@ public class FolderIcon extends FrameLayout implements FolderListener {
     private static final float OUTER_RING_GROWTH_FACTOR = 0.3f;
 
     // The amount of vertical spread between items in the stack [0...1]
-    private static final float PERSPECTIVE_SHIFT_FACTOR = 0.18f;
+    //modify  九宫格图标 图标大小
+    //private static final float PERSPECTIVE_SHIFT_FACTOR = 0.18f;
+    private static final float PERSPECTIVE_SHIFT_FACTOR = 2.0f;
 
     // Flag as to whether or not to draw an outer ring. Currently none is designed.
     public static final boolean HAS_OUTER_RING = true;
@@ -548,6 +552,10 @@ public class FolderIcon extends FrameLayout implements FolderListener {
 
     private PreviewItemDrawingParams computePreviewItemDrawingParams(int index,
             PreviewItemDrawingParams params) {
+        //modify add start 九宫格图标 位置显示
+        int index_order = index;
+        final int previewPadding = FolderRingAnimator.sPreviewPadding;
+        //modify add end
         index = NUM_ITEMS_IN_PREVIEW - index - 1;
         float r = (index * 1.0f) / (NUM_ITEMS_IN_PREVIEW - 1);
         float scale = (1 - PERSPECTIVE_SCALE_FACTOR * (1 - r));
@@ -560,7 +568,25 @@ public class FolderIcon extends FrameLayout implements FolderListener {
         // right. This is natural for the x-axis, but for the y-axis, we have to invert things.
         float transY = mAvailableSpaceInPreview - (offset + scaledSize + scaleOffsetCorrection) + getPaddingTop();
         float transX = (mAvailableSpaceInPreview - scaledSize) / 2;
-        float totalScale = mBaselineIconScale * scale;
+
+        //modify add start 九宫格图标 计算图标的位置
+        if(0 <= index_order && index_order < 3){ // 0 1 2
+            transX= index_order * mBaselineIconSize*0.8f + 1*previewPadding+19f;
+            transY=(mAvailableSpaceInPreview - (2*mBaselineIconSize + scaledSize + scaleOffsetCorrection) + getPaddingTop()+0.2f*mBaselineIconSize)*0.8f+10;
+        }else if(3 <= index_order&&index_order < 6){ // 3 4 5
+            transX=(index_order-3) * mBaselineIconSize*0.8f + 1*previewPadding+19f;
+            //transY=1*mBaselineIconSize+9*previewPadding;
+            transY=(mAvailableSpaceInPreview - (1*mBaselineIconSize + scaledSize + scaleOffsetCorrection) + getPaddingTop()+0.2f*mBaselineIconSize)*0.8f+10;
+        }else if(6 <= index_order&&index_order < 9){ // 6 7 8
+            transX=(index_order-6)*mBaselineIconSize*0.8f + 1*previewPadding+19f;
+            //transY=2*mBaselineIconSize+9*previewPadding;
+            transY=(mAvailableSpaceInPreview - (0*mBaselineIconSize + scaledSize + scaleOffsetCorrection) + getPaddingTop()+0.2f*mBaselineIconSize)*0.8f+10;
+        }
+        //modify add end
+
+        //modify
+        //float totalScale = mBaselineIconScale * scale;
+        float totalScale = mBaselineIconScale * 1 - 0.1f;
         final int overlayAlpha = (int) (80 * (1 - r));
 
         if (params == null) {
