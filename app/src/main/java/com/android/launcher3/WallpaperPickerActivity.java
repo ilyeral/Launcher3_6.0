@@ -48,6 +48,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Pair;
 import android.view.ActionMode;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -66,14 +67,17 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
+import android.widget.GridLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.android.gallery3d.common.BitmapCropTask;
 import com.android.gallery3d.common.BitmapUtils;
 import com.android.gallery3d.common.Utils;
+import com.android.launcher3.util.LogUtil;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.util.WallpaperUtils;
 import com.android.photos.BitmapRegionTileSource;
@@ -98,9 +102,10 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
     @Thunk boolean mIgnoreNextTap;
     @Thunk OnClickListener mThumbnailOnClickListener;
 
-    @Thunk LinearLayout mWallpapersView;
-    @Thunk HorizontalScrollView mWallpaperScrollContainer;
+    @Thunk GridLayout mWallpapersView;
+    @Thunk ScrollView mWallpaperScrollContainer;
     @Thunk View mWallpaperStrip;
+    @Thunk AlphaDisableableButton mSetWallpaperBar;
 
     @Thunk ActionMode.Callback mActionModeCallback;
     @Thunk ActionMode mActionMode;
@@ -110,7 +115,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
     ArrayList<Uri> mTempWallpaperTiles = new ArrayList<Uri>();
     private SavedWallpaperImages mSavedImages;
     @Thunk int mSelectedIndex = -1;
-
+    int floor=0;
     public static abstract class WallpaperTileInfo {
         protected View mView;
         public Drawable mThumb;
@@ -133,6 +138,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
     public static class PickImageInfo extends WallpaperTileInfo {
         @Override
         public void onClick(WallpaperPickerActivity a) {
+            
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
             a.startActivityForResultSafely(intent, IMAGE_PICK);
@@ -379,50 +385,50 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
         mCropView.setVisibility(View.INVISIBLE);
 
         mProgressView = findViewById(R.id.loading);
-        mWallpaperScrollContainer = (HorizontalScrollView) findViewById(R.id.wallpaper_scroll_container);
+        mWallpaperScrollContainer = (ScrollView) findViewById(R.id.wallpaper_scroll_container);
         mWallpaperStrip = findViewById(R.id.wallpaper_strip);
-        mCropView.setTouchCallback(new CropView.TouchCallback() {
-            ViewPropertyAnimator mAnim;
-            @Override
-            public void onTouchDown() {
-                if (mAnim != null) {
-                    mAnim.cancel();
-                }
-                if (mWallpaperStrip.getAlpha() == 1f) {
-                    mIgnoreNextTap = true;
-                }
-                mAnim = mWallpaperStrip.animate();
-                mAnim.alpha(0f)
-                    .setDuration(150)
-                    .withEndAction(new Runnable() {
-                        public void run() {
-                            mWallpaperStrip.setVisibility(View.INVISIBLE);
-                        }
-                    });
-                mAnim.setInterpolator(new AccelerateInterpolator(0.75f));
-                mAnim.start();
-            }
-            @Override
-            public void onTouchUp() {
-                mIgnoreNextTap = false;
-            }
-            @Override
-            public void onTap() {
-                boolean ignoreTap = mIgnoreNextTap;
-                mIgnoreNextTap = false;
-                if (!ignoreTap) {
-                    if (mAnim != null) {
-                        mAnim.cancel();
-                    }
-                    mWallpaperStrip.setVisibility(View.VISIBLE);
-                    mAnim = mWallpaperStrip.animate();
-                    mAnim.alpha(1f)
-                         .setDuration(150)
-                         .setInterpolator(new DecelerateInterpolator(0.75f));
-                    mAnim.start();
-                }
-            }
-        });
+//        mCropView.setTouchCallback(new CropView.TouchCallback() {
+//            ViewPropertyAnimator mAnim;
+//            @Override
+//            public void onTouchDown() {
+//                if (mAnim != null) {
+//                    mAnim.cancel();
+//                }
+//                if (mWallpaperStrip.getAlpha() == 1f) {
+//                    mIgnoreNextTap = true;
+//                }
+//                mAnim = mWallpaperStrip.animate();
+//                mAnim.alpha(0f)
+//                    .setDuration(150)
+//                    .withEndAction(new Runnable() {
+//                        public void run() {
+//                            mWallpaperStrip.setVisibility(View.INVISIBLE);
+//                        }
+//                    });
+//                mAnim.setInterpolator(new AccelerateInterpolator(0.75f));
+//                mAnim.start();
+//            }
+//            @Override
+//            public void onTouchUp() {
+//                mIgnoreNextTap = false;
+//            }
+//            @Override
+//            public void onTap() {
+//                boolean ignoreTap = mIgnoreNextTap;
+//                mIgnoreNextTap = false;
+//                if (!ignoreTap) {
+//                    if (mAnim != null) {
+//                        mAnim.cancel();
+//                    }
+//                    mWallpaperStrip.setVisibility(View.VISIBLE);
+//                    mAnim = mWallpaperStrip.animate();
+//                    mAnim.alpha(1f)
+//                         .setDuration(150)
+//                         .setInterpolator(new DecelerateInterpolator(0.75f));
+//                    mAnim.start();
+//                }
+//            }
+//        });
 
         mThumbnailOnClickListener = new OnClickListener() {
             public void onClick(View v) {
@@ -437,6 +443,10 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
                 WallpaperTileInfo info = (WallpaperTileInfo) v.getTag();
                 if (info.isSelectable() && v.getVisibility() == View.VISIBLE) {
                     selectTile(v);
+                    mWallpaperScrollContainer.setVisibility(View.GONE);
+                    mSetWallpaperBar.setVisibility(View.VISIBLE);
+                    mCropView.setVisibility(View.VISIBLE);
+                    floor=1;
                 }
                 info.onClick(WallpaperPickerActivity.this);
             }
@@ -463,7 +473,8 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
 
         // Populate the built-in wallpapers
         ArrayList<WallpaperTileInfo> wallpapers = findBundledWallpapers();
-        mWallpapersView = (LinearLayout) findViewById(R.id.wallpaper_list);
+        Log.e("wallpapers",""+wallpapers.size());
+        mWallpapersView = (GridLayout) findViewById(R.id.wallpaper_list);
         SimpleWallpapersAdapter ia = new SimpleWallpapersAdapter(getContext(), wallpapers);
         populateWallpapersFromAdapter(mWallpapersView, ia, false);
 
@@ -473,30 +484,30 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
         populateWallpapersFromAdapter(mWallpapersView, mSavedImages, true);
 
         // Populate the live wallpapers
-        final LinearLayout liveWallpapersView =
-                (LinearLayout) findViewById(R.id.live_wallpaper_list);
-        final LiveWallpaperListAdapter a = new LiveWallpaperListAdapter(getContext());
-        a.registerDataSetObserver(new DataSetObserver() {
-            public void onChanged() {
-                liveWallpapersView.removeAllViews();
-                populateWallpapersFromAdapter(liveWallpapersView, a, false);
-                initializeScrollForRtl();
-                updateTileIndices();
-            }
-        });
+//        final LinearLayout liveWallpapersView =
+//                (LinearLayout) findViewById(R.id.live_wallpaper_list);
+//        final LiveWallpaperListAdapter a = new LiveWallpaperListAdapter(getContext());
+//        a.registerDataSetObserver(new DataSetObserver() {
+//            public void onChanged() {
+//                liveWallpapersView.removeAllViews();
+//                populateWallpapersFromAdapter(liveWallpapersView, a, false);
+//                initializeScrollForRtl();
+//                updateTileIndices();
+//            }
+//        });
 
         // Populate the third-party wallpaper pickers
-        final LinearLayout thirdPartyWallpapersView =
-                (LinearLayout) findViewById(R.id.third_party_wallpaper_list);
-        final ThirdPartyWallpaperPickerListAdapter ta =
-                new ThirdPartyWallpaperPickerListAdapter(getContext());
-        populateWallpapersFromAdapter(thirdPartyWallpapersView, ta, false);
+//        final GridLayout thirdPartyWallpapersView =
+//                (GridLayout) findViewById(R.id.third_party_wallpaper_list);
+//        final ThirdPartyWallpaperPickerListAdapter ta =
+//                new ThirdPartyWallpaperPickerListAdapter(getContext());
+//        populateWallpapersFromAdapter(thirdPartyWallpapersView, ta, false);
 
         // Add a tile for the Gallery
-        LinearLayout masterWallpaperList = (LinearLayout) findViewById(R.id.master_wallpaper_list);
+        GridLayout masterWallpaperList = (GridLayout) findViewById(R.id.master_wallpaper_list);
         FrameLayout pickImageTile = (FrameLayout) getLayoutInflater().
                 inflate(R.layout.wallpaper_picker_image_picker_item, masterWallpaperList, false);
-        masterWallpaperList.addView(pickImageTile, 0);
+        mWallpapersView.addView(pickImageTile, 0);
 
         // Make its background the last photo taken on external storage
         Bitmap lastPhoto = getThumbnailOfLastPhoto();
@@ -519,6 +530,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
                     int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                Log.e("onLayoutChange","onLayoutChange");
                 if ((right - left) > 0 && (bottom - top) > 0) {
                     if (mSelectedIndex >= 0 && mSelectedIndex < mWallpapersView.getChildCount()) {
                         mThumbnailOnClickListener.onClick(
@@ -542,11 +554,8 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
         transitioner.setAnimator(LayoutTransition.DISAPPEARING, null);
         mWallpapersView.setLayoutTransition(transitioner);
 
-        // Action bar
-        // Show the custom action bar view
-        final ActionBar actionBar = getActionBar();
-        actionBar.setCustomView(R.layout.actionbar_set_wallpaper);
-        actionBar.getCustomView().setOnClickListener(
+        mSetWallpaperBar=(AlphaDisableableButton) findViewById(R.id.set_wallpaper_button);
+        mSetWallpaperBar.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -554,7 +563,6 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
                         if (mSelectedTile != null && mCropView.getTileSource() != null) {
                             // Prevent user from selecting any new tile.
                             mWallpaperStrip.setVisibility(View.GONE);
-                            actionBar.hide();
 
                             WallpaperTileInfo info = (WallpaperTileInfo) mSelectedTile.getTag();
                             info.onSave(WallpaperPickerActivity.this);
@@ -565,6 +573,31 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
                         }
                     }
                 });
+        mSetWallpaperBar.setVisibility(View.GONE);
+        mCropView.setVisibility(View.GONE);
+        // Action bar
+        // Show the custom action bar view
+//        final ActionBar actionBar = getActionBar();
+//        actionBar.setCustomView(R.layout.actionbar_set_wallpaper);
+//        actionBar.getCustomView().setOnClickListener(
+//                new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        // Ensure that a tile is slelected and loaded.
+//                        if (mSelectedTile != null && mCropView.getTileSource() != null) {
+//                            // Prevent user from selecting any new tile.
+//                            mWallpaperStrip.setVisibility(View.GONE);
+//                            actionBar.hide();
+//
+//                            WallpaperTileInfo info = (WallpaperTileInfo) mSelectedTile.getTag();
+//                            info.onSave(WallpaperPickerActivity.this);
+//                        } else {
+//                            // no tile was selected, so we just finish the activity and go back
+//                            setResult(Activity.RESULT_OK);
+//                            finish();
+//                        }
+//                    }
+//                });
         mSetWallpaperButton = findViewById(R.id.set_wallpaper_button);
 
         // CAB for deleting items
@@ -655,6 +688,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
                 mActionMode = null;
             }
         };
+        //actionBar.hide();
     }
 
     public void setWallpaperButtonEnabled(boolean enabled) {
@@ -680,8 +714,8 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
             final ViewTreeObserver observer = mWallpaperScrollContainer.getViewTreeObserver();
             observer.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
                 public void onGlobalLayout() {
-                    LinearLayout masterWallpaperList =
-                            (LinearLayout) findViewById(R.id.master_wallpaper_list);
+                    GridLayout masterWallpaperList =
+                            (GridLayout) findViewById(R.id.master_wallpaper_list);
                     mWallpaperScrollContainer.scrollTo(masterWallpaperList.getWidth(), 0);
                     mWallpaperScrollContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
@@ -756,7 +790,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
     }
 
     @Thunk void updateTileIndices() {
-        LinearLayout masterWallpaperList = (LinearLayout) findViewById(R.id.master_wallpaper_list);
+        GridLayout masterWallpaperList = (GridLayout) findViewById(R.id.master_wallpaper_list);
         final int childCount = masterWallpaperList.getChildCount();
         final Resources res = getResources();
 
@@ -766,7 +800,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
             int tileIndex = 0;
             for (int i = 0; i < childCount; i++) {
                 View child = masterWallpaperList.getChildAt(i);
-                LinearLayout subList;
+                GridLayout subList;
 
                 int subListStart;
                 int subListEnd;
@@ -775,7 +809,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
                     subListStart = i;
                     subListEnd = i + 1;
                 } else { // if (child instanceof LinearLayout) {
-                    subList = (LinearLayout) child;
+                    subList = (GridLayout) child;
                     subListStart = 0;
                     subListEnd = subList.getChildCount();
                 }
@@ -847,7 +881,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
         final FrameLayout pickedImageThumbnail = (FrameLayout) getLayoutInflater().
                 inflate(R.layout.wallpaper_picker_item, mWallpapersView, false);
         pickedImageThumbnail.setVisibility(View.GONE);
-        mWallpapersView.addView(pickedImageThumbnail, 0);
+        mWallpapersView.addView(pickedImageThumbnail, 1);
 
         // Load the thumbnail
         final ImageView image = (ImageView) pickedImageThumbnail.findViewById(R.id.wallpaper_image);
@@ -901,6 +935,10 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
             if (data != null && data.getData() != null) {
                 Uri uri = data.getData();
                 addTemporaryWallpaperTile(uri, false);
+                mWallpaperScrollContainer.setVisibility(View.GONE);
+                mSetWallpaperBar.setVisibility(View.VISIBLE);
+                mCropView.setVisibility(View.VISIBLE);
+                floor=1;
             }
         } else if (requestCode == PICK_WALLPAPER_THIRD_PARTY_ACTIVITY
                 && resultCode == Activity.RESULT_OK) {
@@ -1166,5 +1204,83 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
 
         // Check if the user has specifically enabled rotation via preferences.
         return Utilities.isAllowRotationPrefEnabled(getApplicationContext(), true);
+    }
+    /**
+     * 增加自定义桌面壁纸
+     *
+     * @param wallpaperPath 桌面壁纸路径文件夹
+     */
+    private void addMyWallpaper(String wallpaperPath, ArrayList<WallpaperTileInfo> bundled) {
+
+        try {
+            File mWallpaperDir = new File(wallpaperPath);
+            if (mWallpaperDir.exists()) {
+                if (mWallpaperDir.isDirectory()) {
+                    File[] files = mWallpaperDir.listFiles();
+                    for (File file : files) {
+                        if (!file.isFile()) {
+                            continue;
+                        }
+                        String name = file.getName();
+                        int dotPos = name.lastIndexOf('.');
+                        String extension = "";
+                        if (dotPos >= -1) {
+                            extension = name.substring(dotPos);
+                            name = name.substring(0, dotPos);
+                        }
+
+                        if (!extension.endsWith("png") && !extension.endsWith("jpg")) {
+//                    if (!extension.endsWith("jpg")) {
+                            // PNG格式会出错，但设置没有问题，JPG格式则不会出现出错日志
+                            continue;
+                        }
+
+                        File thumbnail = new File(mWallpaperDir, name + extension);
+                        String absolutePath = thumbnail.getAbsolutePath();
+                        Log.d(TAG, "wallpaper file path name: " + absolutePath);
+//                    Bitmap myThumbnail = createMyThumbnail(this, thumbnail.getAbsolutePath(), 0, false);
+                        Bitmap myThumbnail = BitmapFactory.decodeFile(thumbnail.getAbsolutePath());
+                        bundled.add(new FileWallpaperInfo(thumbnail, new BitmapDrawable(myThumbnail)));
+                    }
+                }
+            } else
+                Log.e(TAG, "File path " + wallpaperPath + " not exists");
+        }catch (Throwable throwable){
+            throwable.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if(keyCode==KeyEvent.KEYCODE_BACK&&floor!=0){
+            mWallpaperScrollContainer.setVisibility(View.VISIBLE);
+            mSetWallpaperBar.setVisibility(View.GONE);
+            mCropView.setVisibility(View.GONE);
+            floor=0;
+        }else{
+            super.onKeyDown(keyCode,event);
+        }
+        return true;
+    }
+    @Override
+
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        // TODO Auto-generated method stub
+        if(item.getItemId() == android.R.id.home)
+        {
+            if(floor!=0){
+                mWallpaperScrollContainer.setVisibility(View.VISIBLE);
+                mSetWallpaperBar.setVisibility(View.GONE);
+                mCropView.setVisibility(View.GONE);
+                floor=0;
+                return true;
+            }else{
+                finish();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

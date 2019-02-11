@@ -49,6 +49,8 @@ public class LauncherAppState {
     private InvariantDeviceProfile mInvariantDeviceProfile;
 
     private LauncherAccessibilityDelegate mAccessibilityDelegate;
+    //modify 日历显示日期
+    public static final String ACTION_UPDATE_ICON = "com.xxx.update_icon";
 
     public static LauncherAppState getInstance() {
         if (INSTANCE == null) {
@@ -103,6 +105,15 @@ public class LauncherAppState {
 
         sContext.registerReceiver(mModel, filter);
         UserManagerCompat.getInstance(sContext).enableAndResetCache();
+
+        //modify add start 日历显示日期
+        IntentFilter timefilter = new IntentFilter();
+        timefilter.addAction(Intent.ACTION_DATE_CHANGED);
+        timefilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+        timefilter.addAction("android.intent.action.TIME_SET");
+        timefilter.addAction(ACTION_UPDATE_ICON);
+        sContext.registerReceiver(mModel, timefilter);
+        //modify add end
     }
 
     /**

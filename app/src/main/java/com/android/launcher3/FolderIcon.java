@@ -77,7 +77,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
     // The amount of vertical spread between items in the stack [0...1]
     //modify  九宫格图标 图标大小
     //private static final float PERSPECTIVE_SHIFT_FACTOR = 0.18f;
-    private static final float PERSPECTIVE_SHIFT_FACTOR = 2.0f;
+    private static final float PERSPECTIVE_SHIFT_FACTOR = 2.1f;
 
     // Flag as to whether or not to draw an outer ring. Currently none is designed.
     public static final boolean HAS_OUTER_RING = true;
@@ -571,14 +571,14 @@ public class FolderIcon extends FrameLayout implements FolderListener {
 
         //modify add start 九宫格图标 计算图标的位置
         if(0 <= index_order && index_order < 3){ // 0 1 2
-            transX= index_order * mBaselineIconSize*0.8f + 1*previewPadding+19f;
+            transX= index_order * mBaselineIconSize*0.8f + 1*previewPadding+22f;
             transY=(mAvailableSpaceInPreview - (2*mBaselineIconSize + scaledSize + scaleOffsetCorrection) + getPaddingTop()+0.2f*mBaselineIconSize)*0.8f+10;
         }else if(3 <= index_order&&index_order < 6){ // 3 4 5
-            transX=(index_order-3) * mBaselineIconSize*0.8f + 1*previewPadding+19f;
+            transX=(index_order-3) * mBaselineIconSize*0.8f + 1*previewPadding+22f;
             //transY=1*mBaselineIconSize+9*previewPadding;
             transY=(mAvailableSpaceInPreview - (1*mBaselineIconSize + scaledSize + scaleOffsetCorrection) + getPaddingTop()+0.2f*mBaselineIconSize)*0.8f+10;
         }else if(6 <= index_order&&index_order < 9){ // 6 7 8
-            transX=(index_order-6)*mBaselineIconSize*0.8f + 1*previewPadding+19f;
+            transX=(index_order-6)*mBaselineIconSize*0.8f + 1*previewPadding+22f;
             //transY=2*mBaselineIconSize+9*previewPadding;
             transY=(mAvailableSpaceInPreview - (0*mBaselineIconSize + scaledSize + scaleOffsetCorrection) + getPaddingTop()+0.2f*mBaselineIconSize)*0.8f+10;
         }

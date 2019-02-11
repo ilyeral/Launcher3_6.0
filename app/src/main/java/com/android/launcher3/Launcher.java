@@ -4796,6 +4796,14 @@ public class Launcher extends Activity
                 break;
         }
     }
+    //modify add 日历添加日期
+    @Override
+    public void updateAppIcon(AppInfo info){
+        if (null != mIconCache) {
+//        	mIconCache.updateTitleAndIcon(info);
+            mWorkspace.updateShortcut(info.componentName.getPackageName());
+        }
+    }
 }
 
 interface DebugIntents {

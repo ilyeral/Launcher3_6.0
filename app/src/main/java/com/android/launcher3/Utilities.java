@@ -41,6 +41,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
@@ -64,10 +65,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.android.launcher3.util.IconUtilities.IconFormat;
 
 /**
  * Various utilities shared amongst the Launcher's classes.
@@ -242,8 +246,7 @@ public final class Utilities {
             icon.setBounds(sOldBounds);
             canvas.setBitmap(null);
 
-            bitmap= IconUtilities.IconFormat(bitmap);
-            Log.e("hight",""+IconUtilities.getOpaque(bitmap).hight);//图片宽度
+            bitmap= IconFormat(bitmap);
             return bitmap;
         }
     }
@@ -732,5 +735,110 @@ public final class Utilities {
 
     public static String createDbSelectionQuery(String columnName, Iterable<?> values) {
         return String.format(Locale.ENGLISH, "%s IN (%s)", columnName, TextUtils.join(", ", values));
+    }
+    //modify add 日历显示日期
+    static Bitmap createCalendarIconBitmap(Context context) {
+        //Time time = new Time();
+        //time.setToNow();
+        int dayOfMonth         = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+        int dayOfWeek          = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+//      canvas.drawBitmap(getRes(mTime.monthDay), null, getBounds(), mPaint);
+        Bitmap calendarBackground = BitmapFactory.decodeResource(context.getResources(), R.drawable.calendar);
+        Bitmap dayOfMonthRes      = getCalendarDataRes(context, dayOfMonth);
+        Bitmap dayOfWeekRes       = getCalendarWeekDayRes(context, dayOfWeek);
+
+        int width  = getIconBitmapSize();
+        int height = getIconBitmapSize();
+
+        Bitmap newBmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(newBmp);
+
+        Rect destRect = new Rect(0, 0, width, height);
+        Rect srcRect  = new Rect(0, 0, calendarBackground.getWidth(), calendarBackground.getHeight());
+
+        canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG));
+        canvas.drawBitmap(calendarBackground, srcRect, destRect, null);
+        canvas.drawBitmap(dayOfMonthRes, (width - dayOfMonthRes.getWidth()) / 2 , (height - dayOfMonthRes.getHeight()) / 12*11, null);
+        canvas.drawBitmap(dayOfWeekRes, (width - dayOfWeekRes.getWidth()) / 2, (height - dayOfWeekRes.getHeight()) /12, null);
+
+        canvas.save(Canvas.ALL_SAVE_FLAG);
+        canvas.restore();
+        Bitmap FinalBmp=IconFormat(newBmp);
+        return FinalBmp;
+    }
+    public static Bitmap getCalendarDataRes(Context context, int mtext) {
+        String text =mtext+"";
+        Resources resources = context.getResources();
+        float scale = resources.getDisplayMetrics().density;
+        Bitmap bitmap  = Bitmap.createBitmap(165, 60, Bitmap.Config.ARGB_8888);
+        android.graphics.Bitmap.Config bitmapConfig =
+                bitmap.getConfig();
+        if(bitmapConfig == null) {
+            bitmapConfig = android.graphics.Bitmap.Config.ARGB_8888;
+        }
+        bitmap = bitmap.copy(bitmapConfig, true);
+
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(Color.rgb(61, 61, 61));
+        paint.setTextSize((int) (24 * scale));
+        paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+
+        paint.setTypeface(Typeface.DEFAULT);
+        paint.setStrokeWidth(3.0f);
+        Rect bounds = new Rect();
+
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        int x = (bitmap.getWidth() - bounds.width())/2;
+        int y = (bitmap.getHeight() + bounds.height())/2;
+        if(mtext/10==1){
+            x-=7;
+        }else{
+            x-=2;
+        }
+        canvas.drawText(text, x , y , paint);
+
+        return bitmap;
+    }
+    public static Bitmap getCalendarWeekDayRes(Context context, int mtext) {
+        String text=null;
+        switch (mtext){
+            case 1:text="星期日";break;
+            case 2:text="星期一";break;
+            case 3:text="星期二";break;
+            case 4:text="星期三";break;
+            case 5:text="星期四";break;
+            case 6:text="星期五";break;
+            case 7:text="星期六";break;
+        }
+        Resources resources = context.getResources();
+        float scale = resources.getDisplayMetrics().density;
+        Bitmap bitmap  = Bitmap.createBitmap(165, 50, Bitmap.Config.ARGB_8888);
+        android.graphics.Bitmap.Config bitmapConfig =
+                bitmap.getConfig();
+        if(bitmapConfig == null) {
+            bitmapConfig = android.graphics.Bitmap.Config.ARGB_8888;
+        }
+        bitmap = bitmap.copy(bitmapConfig, true);
+
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        if(mtext==6||mtext==7){
+            paint.setColor(Color.rgb(0, 255, 127));
+        }else {
+            paint.setColor(Color.rgb(178, 34, 34));
+        }
+        paint.setTextSize((int) (14 * scale));
+        paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+
+        Rect bounds = new Rect();
+
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        int x = (bitmap.getWidth() - bounds.width())/2;
+        int y = (bitmap.getHeight() + bounds.height())/2;
+
+        canvas.drawText(text, x , y , paint);
+
+        return bitmap;
     }
 }

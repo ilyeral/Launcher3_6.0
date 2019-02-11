@@ -634,4 +634,20 @@ public class BubbleTextView extends TextView
     public static interface BubbleTextShadowHandler {
         void setPressedIcon(BubbleTextView icon, Bitmap background);
     }
+    //modify add 日历显示日期
+    public void applyCalendarInfo(ShortcutInfo info) {
+        Bitmap b = Utilities.createCalendarIconBitmap(mLauncher);
+
+        FastBitmapDrawable iconDrawable = mLauncher.createIconDrawable(b);
+        iconDrawable.setGhostModeEnabled(info.isDisabled != 0);
+
+        setIcon(iconDrawable, mIconSize);
+        if (info.contentDescription != null) {
+            setContentDescription(info.contentDescription);
+        }
+        setText(info.title);
+        setTag(info);
+
+
+    }
 }

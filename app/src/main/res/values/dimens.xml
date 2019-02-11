@@ -88,7 +88,7 @@
     <dimen name="widget_section_height">56dp</dimen>
     <dimen name="widget_section_icon_size">40dp</dimen>
     <dimen name="widget_section_vertical_padding">8dp</dimen>
-    <dimen name="widget_section_horizontal_padding">16dp</dimen>
+    <dimen name="widget_section_horizontal_padding">8dp</dimen>
 
     <dimen name="widget_row_padding">8dp</dimen>
     <dimen name="widget_row_divider">2dp</dimen>
@@ -138,6 +138,6 @@
     <dimen name="pending_widget_elevation">2dp</dimen>
 <!-- Wallpaper picker -->
     <dimen name="wallpaperThumbnailWidth">106.5dp</dimen>
-    <dimen name="wallpaperThumbnailHeight">94.5dp</dimen>
+    <dimen name="wallpaperThumbnailHeight">189.5dp</dimen>
     <dimen name="wallpaperItemIconSize">32dp</dimen>
 </resources>

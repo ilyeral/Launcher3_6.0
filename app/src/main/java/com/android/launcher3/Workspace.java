@@ -4490,6 +4490,29 @@ public class Workspace extends PagedView
         sourceData.putString(Stats.SOURCE_EXTRA_CONTAINER, Stats.CONTAINER_HOMESCREEN);
         sourceData.putInt(Stats.SOURCE_EXTRA_CONTAINER_PAGE, getCurrentPage());
     }
+    //modify add 日历显示日期
+    void updateShortcut(String pkgName) {
+        ArrayList<ShortcutAndWidgetContainer> childrenLayouts = getAllShortcutAndWidgetContainers();
+        for (ShortcutAndWidgetContainer layout: childrenLayouts) {
+            int childCount = layout.getChildCount();
+            for (int j = 0; j < childCount; j++) {
+                final View view = layout.getChildAt(j);
+                Object tag = view.getTag();
+                if (tag instanceof ShortcutInfo) {
+                    ShortcutInfo info = (ShortcutInfo) tag;
+                    try {
+                        if (pkgName.equals(info.intent.getComponent().getPackageName())) {
+                            BubbleTextView bv = (BubbleTextView) view;
+//                            bv.applyFromShortcutInfo(info, mIconCache);
+                            bv.applyCalendarInfo(info);
+                            bv.invalidate();
+                        }
+                    } catch (Exception e) {
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * Used as a workaround to ensure that the AppWidgetService receives the

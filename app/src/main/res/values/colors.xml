@@ -35,7 +35,7 @@
     <color name="quantum_panel_text_color">#FFeeeeee</color>
     <!--、、modify 修改文件夹背景透明度-->
     <color name="quantum_panel_bg_color">#44F5F5F5</color>
-    <color name="quantum_panel_bg_color_dark">#FF374248</color>
+    <color name="quantum_panel_bg_color_dark">#00374248</color>
 
     <color name="outline_color">#FFFFFFFF</color>
 
@@ -50,7 +50,7 @@
     <!-- Widgets view -->
     <color name="widgets_view_section_text_color">#FFFFFF</color>
     <color name="widgets_view_item_text_color">#C4C4C4</color>
-    <color name="widgets_cell_color">#263238</color>
+    <color name="widgets_cell_color">#00263238</color>
     <!-- Wallpaper -->
     <color name="wallpaper_picker_translucent_gray">#66000000</color>
     <color name="launcher_accent_color">#ff009688</color>

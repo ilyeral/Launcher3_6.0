@@ -208,6 +208,8 @@ public class LauncherModel extends BroadcastReceiver
         public boolean isAllAppsButtonRank(int rank);
         public void onPageBoundSynchronously(int page);
         public void dumpLogsToLocalData();
+        //modify add 日历显示日期
+        public void updateAppIcon(AppInfo info);
     }
 
     public interface ItemInfoFilter {
@@ -1283,6 +1285,41 @@ public class LauncherModel extends BroadcastReceiver
             UserManagerCompat.getInstance(context).enableAndResetCache();
             forceReload();
         }
+        //modify add start 日历显示日期
+        else if (Intent.ACTION_DATE_CHANGED.equals(action) ||
+                Intent.ACTION_TIMEZONE_CHANGED.equals(action) ||
+                "android.intent.action.TIME_SET".equals(action) ||
+                LauncherAppState.ACTION_UPDATE_ICON.equals(action)) {
+            String pkgName = null;
+            if (LauncherAppState.ACTION_UPDATE_ICON.equals(action)) {
+                pkgName = intent.getStringExtra("packageName");
+            } else {
+                pkgName = "com.android.calendar";
+            }
+
+            final ArrayList<AppInfo> list
+                    = (ArrayList<AppInfo>) mBgAllAppsList.data.clone();
+
+            if (null == list || list.isEmpty()) {
+                return;
+            }
+
+            AppInfo info = null;
+            for (AppInfo ai : list) {
+                if (ai.componentName.getPackageName().equals(pkgName)) {
+                    info = ai;
+                    break;
+                }
+            }
+
+            if (null != info && mCallbacks != null) {
+                Callbacks callbacks = mCallbacks.get();
+                if (callbacks != null && info != null) {
+                    callbacks.updateAppIcon(info);
+                }
+            }
+        }
+        //modify add end
     }
 
     void forceReload() {

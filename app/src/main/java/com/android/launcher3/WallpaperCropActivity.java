@@ -37,6 +37,7 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -77,6 +78,7 @@ public class WallpaperCropActivity extends BaseActivity implements Handler.Callb
     protected View mProgressView;
     protected Uri mUri;
     protected View mSetWallpaperButton;
+    @Thunk AlphaDisableableButton mSetWallpaperBar;
 
     private HandlerThread mLoaderThread;
     private Handler mLoaderHandler;
@@ -114,12 +116,8 @@ public class WallpaperCropActivity extends BaseActivity implements Handler.Callb
             finish();
             return;
         }
-
-        // Action bar
-        // Show the custom action bar view
-        final ActionBar actionBar = getActionBar();
-        actionBar.setCustomView(R.layout.actionbar_set_wallpaper);
-        actionBar.getCustomView().setOnClickListener(
+        mSetWallpaperBar=(AlphaDisableableButton) findViewById(R.id.set_wallpaper_button);
+        mSetWallpaperBar.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -127,6 +125,18 @@ public class WallpaperCropActivity extends BaseActivity implements Handler.Callb
                         cropImageAndSetWallpaper(imageUri, null, finishActivityWhenDone);
                     }
                 });
+        // Action bar
+        // Show the custom action bar view
+//        final ActionBar actionBar = getActionBar();
+//        actionBar.setCustomView(R.layout.actionbar_set_wallpaper);
+//        actionBar.getCustomView().setOnClickListener(
+//                new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        boolean finishActivityWhenDone = true;
+//                        cropImageAndSetWallpaper(imageUri, null, finishActivityWhenDone);
+//                    }
+//                });
         mSetWallpaperButton = findViewById(R.id.set_wallpaper_button);
 
         // Load image in background

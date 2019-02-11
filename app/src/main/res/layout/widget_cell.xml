@@ -21,7 +21,7 @@
     android:layout_weight="1"
     android:orientation="vertical"
     android:focusable="true"
-    android:background="@color/widgets_cell_color"
+    android:background="#1d04453e"
     android:gravity="center_horizontal">
 
     <LinearLayout

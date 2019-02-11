@@ -19,41 +19,52 @@
     android:id="@+id/widgets_cell_list_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/widgets_cell_color"
     android:orientation="vertical"
     android:focusable="true"
     android:descendantFocusability="afterDescendants">
 
     <!-- Section info -->
 
-    <com.android.launcher3.BubbleTextView
-        android:id="@+id/section"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/widget_section_height"
-        android:background="@color/quantum_panel_bg_color_dark"
-        android:drawablePadding="@dimen/widget_section_horizontal_padding"
-        android:ellipsize="end"
-        android:focusable="true"
-        android:gravity="start|center_vertical"
-        android:importantForAccessibility="no"
-        android:paddingBottom="@dimen/widget_section_vertical_padding"
-        android:paddingLeft="@dimen/widget_section_horizontal_padding"
-        android:paddingRight="@dimen/widget_section_horizontal_padding"
-        android:paddingTop="@dimen/widget_section_vertical_padding"
-        android:singleLine="true"
-        android:textColor="@color/widgets_view_section_text_color"
-        android:textSize="16sp"
-        launcher:customShadows="false"
-        launcher:deferShadowGeneration="true"
-        launcher:iconDisplay="widget_section"
-        launcher:iconSizeOverride="@dimen/widget_section_icon_size"
-        launcher:layoutHorizontal="true" />
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="4dp"
+            android:layout_height="34dp"
+            android:layout_marginTop="11dp"
+            android:layout_marginBottom="11dp"
+            android:background="@color/quantum_panel_bg_color_dark"
+            android:orientation="horizontal"></LinearLayout>
+        <com.android.launcher3.BubbleTextView
+            android:id="@+id/section"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/widget_section_height"
+            android:drawablePadding="@dimen/widget_section_horizontal_padding"
+            android:ellipsize="end"
+            android:focusable="true"
+            android:gravity="start|center_vertical"
+            android:importantForAccessibility="no"
+            android:paddingBottom="@dimen/widget_section_vertical_padding"
+            android:paddingLeft="@dimen/widget_section_horizontal_padding"
+            android:paddingRight="@dimen/widget_section_horizontal_padding"
+            android:paddingTop="@dimen/widget_section_vertical_padding"
+            android:singleLine="true"
+            android:textColor="@color/widgets_view_section_text_color"
+            android:textSize="16sp"
+            launcher:customShadows="false"
+            launcher:deferShadowGeneration="true"
+            launcher:iconDisplay="widget_section"
+            launcher:iconSizeOverride="@dimen/widget_section_icon_size"
+            launcher:layoutHorizontal="true" />
+    </LinearLayout>
 
     <HorizontalScrollView
         android:id="@+id/widgets_scroll_container"
         android:theme="@style/Theme.Dark.CustomOverscroll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/widgets_cell_color"
         android:scrollbars="none">
         <LinearLayout
             android:id="@+id/widgets_cell_list"

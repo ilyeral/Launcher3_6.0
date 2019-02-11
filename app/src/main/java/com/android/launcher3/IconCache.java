@@ -568,6 +568,11 @@ public class IconCache {
                 entry.contentDescription = mUserManager.getBadgedLabelForUser(entry.title, user);
             }
         }
+        //modify add start 日历显示日期
+        if (null != entry && componentName.getPackageName().equals("com.android.calendar")) {
+            entry.icon = Utilities.createCalendarIconBitmap(mContext);
+        }
+        //modify add end
         return entry;
     }
 
