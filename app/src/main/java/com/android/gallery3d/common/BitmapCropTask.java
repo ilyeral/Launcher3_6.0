@@ -30,7 +30,11 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
+
+import com.android.launcher3.WallpaperPickerActivity;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -40,7 +44,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class BitmapCropTask extends AsyncTask<Void, Void, Boolean> {
-
+    final int SET_TYPE_SYSTEM=1;
+    final int SET_TYPE_LOCK=2;
+    final int SET_TYPE_ALL=3;
     public interface OnBitmapCroppedHandler {
         public void onBitmapCropped(byte[] imageBytes);
     }
@@ -168,6 +174,7 @@ public class BitmapCropTask extends AsyncTask<Void, Void, Boolean> {
     public Bitmap getCroppedBitmap() {
         return mCroppedBitmap;
     }
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public boolean cropBitmap() {
         boolean failure = false;
 
@@ -182,7 +189,12 @@ public class BitmapCropTask extends AsyncTask<Void, Void, Boolean> {
             try {
                 InputStream is = regenerateInputStream();
                 if (is != null) {
-                    wallpaperManager.setStream(is);
+                    if(WallpaperPickerActivity.getSettingType()==SET_TYPE_SYSTEM||WallpaperPickerActivity.getSettingType()==SET_TYPE_ALL){
+                        wallpaperManager.setStream(is,null,true,WallpaperManager.FLAG_SYSTEM);
+                    }
+                    if(WallpaperPickerActivity.getSettingType()==SET_TYPE_LOCK||WallpaperPickerActivity.getSettingType()==SET_TYPE_ALL){
+                        wallpaperManager.setStream(is,null,true,WallpaperManager.FLAG_LOCK);
+                    }
                     Utils.closeSilently(is);
                 }
             } catch (IOException e) {
@@ -374,7 +386,12 @@ public class BitmapCropTask extends AsyncTask<Void, Void, Boolean> {
                 if (mSetWallpaper && wallpaperManager != null) {
                     try {
                         byte[] outByteArray = tmpOut.toByteArray();
-                        wallpaperManager.setStream(new ByteArrayInputStream(outByteArray));
+                        if(WallpaperPickerActivity.getSettingType()==SET_TYPE_SYSTEM||WallpaperPickerActivity.getSettingType()==SET_TYPE_ALL){
+                            wallpaperManager.setStream(new ByteArrayInputStream(outByteArray),null,true,WallpaperManager.FLAG_SYSTEM);
+                        }
+                        if(WallpaperPickerActivity.getSettingType()==SET_TYPE_LOCK||WallpaperPickerActivity.getSettingType()==SET_TYPE_ALL){
+                            wallpaperManager.setStream(new ByteArrayInputStream(outByteArray),null,true,WallpaperManager.FLAG_LOCK);
+                        }
                         if (mOnBitmapCroppedHandler != null) {
                             mOnBitmapCroppedHandler.onBitmapCropped(outByteArray);
                         }
@@ -391,6 +408,7 @@ public class BitmapCropTask extends AsyncTask<Void, Void, Boolean> {
         return !failure; // True if any of the operations failed
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected Boolean doInBackground(Void... params) {
         return cropBitmap();

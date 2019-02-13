@@ -28,4 +28,5 @@ dependencies {
     implementation files('E:/Android/make/Launcher3/libs/protobuf-java-2.5.0.jar')
     implementation files('E:/Android/make/Launcher3/libs/protobuf-javanano-3.0.0-alpha-2.jar')
     compile 'com.android.support:recyclerview-v7:+'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 }

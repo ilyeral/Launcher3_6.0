@@ -120,6 +120,7 @@ public final class Utilities {
     private static boolean sForceEnableRotation = isPropertyEnabled(FORCE_ENABLE_ROTATION_PROPERTY);
 
     public static final String ALLOW_ROTATION_PREFERENCE_KEY = "pref_allowRotation";
+    public static final String ALLOW_CUSTOM_CONTENT_KEY = "pref_allowCustomContent";
 
     public static boolean isPropertyEnabled(String propertyName) {
         return Log.isLoggable(propertyName, Log.VERBOSE);
@@ -136,6 +137,21 @@ public final class Utilities {
     public static boolean isRotationAllowedForDevice(Context context) {
         return sForceEnableRotation || context.getResources().getBoolean(R.bool.allow_rotation);
     }
+
+    /**
+     * 是否创建左屏
+     * @param context
+     * @param multiProcess
+     * @return
+     */
+    public static boolean isAllowCustomContentPrefEnabled(Context context, boolean multiProcess) {
+        SharedPreferences sharedPrefs = context.getSharedPreferences(
+                LauncherAppState.getSharedPreferencesKey(), Context.MODE_PRIVATE | (multiProcess ?
+                        Context.MODE_MULTI_PROCESS : 0));
+        boolean allowRotationPref = sharedPrefs.getBoolean(ALLOW_CUSTOM_CONTENT_KEY, false);
+        return  allowRotationPref;
+    }
+
 
     public static Bitmap createIconBitmap(Cursor c, int iconIndex, Context context) {
         byte[] data = c.getBlob(iconIndex);

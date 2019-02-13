@@ -261,6 +261,10 @@ public class LauncherProvider extends ContentProvider {
                                 LauncherAppState.getSharedPreferencesKey(), Context.MODE_PRIVATE)
                                 .getBoolean(arg, extras.getBoolean(
                                         LauncherSettings.Settings.EXTRA_DEFAULT_VALUE)));
+                Log.e("result",arg+" "+ getContext().getSharedPreferences(
+                                LauncherAppState.getSharedPreferencesKey(), Context.MODE_PRIVATE)
+                                .getBoolean(arg, extras.getBoolean(
+                                        LauncherSettings.Settings.EXTRA_DEFAULT_VALUE)));
                 return result;
             }
             case LauncherSettings.Settings.METHOD_SET_BOOLEAN: {

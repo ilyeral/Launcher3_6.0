@@ -20,6 +20,7 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:launcher="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFfdfdfd">
@@ -55,7 +56,7 @@
         <ScrollView
             android:id="@+id/wallpaper_scroll_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="511dp">
 
             <GridLayout
                 android:id="@+id/master_wallpaper_list"
@@ -68,19 +69,18 @@
                     android:id="@+id/wallpaper_list"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:columnCount="3"
-                    />
+                    android:columnCount="3" />
 
                 <!--<LinearLayout-->
-                    <!--android:id="@+id/live_wallpaper_list"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:orientation="horizontal" />-->
+                <!--android:id="@+id/live_wallpaper_list"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal" />-->
                 <!--<GridLayout-->
-                    <!--android:id="@+id/third_party_wallpaper_list"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:columnCount="3" />-->
+                <!--android:id="@+id/third_party_wallpaper_list"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:columnCount="3" />-->
 
             </GridLayout>
         </ScrollView>
@@ -91,26 +91,67 @@
             <!--android:background="@drawable/tile_shadow_bottom" />-->
     </LinearLayout>
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:background="#99f2f2f2">
-    <com.android.launcher3.AlphaDisableableButton
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_gravity="bottom"
-        android:id="@+id/set_wallpaper_button"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="16dp"
-        android:paddingRight="20dp"
-        android:drawableLeft="@drawable/ic_actionbar_accept"
-        android:drawablePadding="8dp"
-        android:gravity="start|center_vertical"
-        android:text="@string/wallpaper_instructions">
-    </com.android.launcher3.AlphaDisableableButton>
-</LinearLayout>
+        android:layout_height="240dp"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal">
+
+
+        <com.android.launcher3.AlphaDisableableButton xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/set_wallpaper_button"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="40dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/set_wallpaper_menu_bg"
+            android:drawablePadding="8dp"
+            android:gravity="center"
+            android:paddingRight="20dp"
+            android:text="@string/wallpaper_instructions"
+            launcher:layout_constraintBottom_toBottomOf="parent"
+            launcher:layout_constraintEnd_toEndOf="parent"
+            launcher:layout_constraintStart_toStartOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/rg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginBottom="24dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical"
+            launcher:layout_constraintBottom_toBottomOf="parent"
+            launcher:layout_constraintEnd_toEndOf="parent">
+
+            <RadioButton
+                android:id="@+id/rb1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="壁纸"
+                android:textAlignment="center" />
+
+            <RadioButton
+                android:id="@+id/rb2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="锁屏"
+                android:textAlignment="center" />
+
+            <RadioButton
+                android:id="@+id/rb3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="同时"
+                android:textAlignment="center" />
+        </RadioGroup>
+    </android.support.constraint.ConstraintLayout>
 
 </FrameLayout>

@@ -400,6 +400,11 @@ public class Launcher extends Activity
             setOrientation();
         }
     };
+    private Runnable mUpdateCustomcontentRunnable = new Runnable() {
+        public void run() {
+            invalidateHasCustomContentToLeft();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -531,6 +536,12 @@ public class Launcher extends Activity
                 mUpdateOrientationRunnable.run();
             }
         }
+        if (Utilities.ALLOW_CUSTOM_CONTENT_KEY.equals(settings)) {
+            if (!waitUntilResume(mUpdateCustomcontentRunnable, true)) {
+                mUpdateCustomcontentRunnable.run();
+            }
+
+        }
     }
 
     private LauncherCallbacks mLauncherCallbacks;
@@ -605,10 +616,11 @@ public class Launcher extends Activity
 
     /** To be overridden by subclasses to hint to Launcher that we have custom content */
     protected boolean hasCustomContentToLeft() {
-        if (mLauncherCallbacks != null) {
-            return mLauncherCallbacks.hasCustomContentToLeft();
-        }
-        return false;
+//        if (mLauncherCallbacks != null) {
+//            return mLauncherCallbacks.hasCustomContentToLeft();
+//        }
+        Log.e("hasCustomContentToLeft",""+Utilities.isAllowCustomContentPrefEnabled(getApplicationContext(), false));
+        return Utilities.isAllowCustomContentPrefEnabled(getApplicationContext(), false);
     }
 
     /**
@@ -2764,6 +2776,7 @@ public class Launcher extends Activity
         if (mLauncherCallbacks != null) {
             mLauncherCallbacks.onClickSettingsButton(v);
         } else {
+            Log.e("onClickSettingsButton","onClickSettingsButton");
             startActivity(new Intent(this, SettingsActivity.class));
         }
     }
@@ -3663,7 +3676,7 @@ public class Launcher extends Activity
     @Override
     public void bindScreens(ArrayList<Long> orderedScreenIds) {
         bindAddScreens(orderedScreenIds);
-
+        Log.e("bindScreens","调用");
         // If there are no screens, we need to have an empty screen
         if (orderedScreenIds.size() == 0) {
             mWorkspace.addExtraEmptyScreen();

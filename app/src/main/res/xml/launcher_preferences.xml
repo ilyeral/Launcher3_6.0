@@ -16,11 +16,28 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreference
-            android:key="pref_allowRotation"
-            android:title="@string/allow_rotation_title"
-            android:defaultValue="@bool/allow_rotation"
-            android:persistent="true"
-    />
+    <!--<SwitchPreference-->
+            <!--android:key="pref_allowRotation"-->
+            <!--android:title="@string/allow_rotation_title"-->
+            <!--android:defaultValue="@bool/allow_rotation"-->
+            <!--android:persistent="true"-->
+    <!--/>-->
+    <com.android.launcher3.widgets.MySwitchPreference
+        android:key="pref_allowCustomContent"
+        android:title="开启左屏"
+        android:summary="可以开启左页"
+        android:defaultValue="false"
+        android:persistent="true"
+        />
+    <EditTextPreference
+        android:defaultValue="Default value"
+        android:key="edit_text_preference_1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Edit text preference" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="check_box_preference_1"
+        android:title="Check box preference" />
 
 </PreferenceScreen>

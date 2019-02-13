@@ -45,6 +45,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
 import android.provider.MediaStore;
+import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 import android.util.Pair;
 import android.view.ActionMode;
@@ -71,13 +72,13 @@ import android.widget.GridLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.android.gallery3d.common.BitmapCropTask;
 import com.android.gallery3d.common.BitmapUtils;
 import com.android.gallery3d.common.Utils;
-import com.android.launcher3.util.LogUtil;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.util.WallpaperUtils;
 import com.android.photos.BitmapRegionTileSource;
@@ -89,7 +90,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class WallpaperPickerActivity extends WallpaperCropActivity {
+public class WallpaperPickerActivity extends WallpaperCropActivity implements RadioGroup.OnCheckedChangeListener {
     static final String TAG = "Launcher.WallpaperPickerActivity";
 
     public static final int IMAGE_PICK = 5;
@@ -106,7 +107,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
     @Thunk ScrollView mWallpaperScrollContainer;
     @Thunk View mWallpaperStrip;
     @Thunk AlphaDisableableButton mSetWallpaperBar;
-
+    @Thunk ConstraintLayout mSetWallpaperBarLayout;
     @Thunk ActionMode.Callback mActionModeCallback;
     @Thunk ActionMode mActionMode;
 
@@ -116,6 +117,8 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
     private SavedWallpaperImages mSavedImages;
     @Thunk int mSelectedIndex = -1;
     int floor=0;
+    static int settingType=1;
+    @Thunk RadioGroup radioGroup;
     public static abstract class WallpaperTileInfo {
         protected View mView;
         public Drawable mThumb;
@@ -444,7 +447,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
                 if (info.isSelectable() && v.getVisibility() == View.VISIBLE) {
                     selectTile(v);
                     mWallpaperScrollContainer.setVisibility(View.GONE);
-                    mSetWallpaperBar.setVisibility(View.VISIBLE);
+                    mSetWallpaperBarLayout.setVisibility(View.VISIBLE);
                     mCropView.setVisibility(View.VISIBLE);
                     floor=1;
                 }
@@ -573,7 +576,8 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
                         }
                     }
                 });
-        mSetWallpaperBar.setVisibility(View.GONE);
+        mSetWallpaperBarLayout=findViewById(R.id.cl);
+        mSetWallpaperBarLayout.setVisibility(View.GONE);
         mCropView.setVisibility(View.GONE);
         // Action bar
         // Show the custom action bar view
@@ -688,7 +692,8 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
                 mActionMode = null;
             }
         };
-        //actionBar.hide();
+        radioGroup = findViewById(R.id.rg);
+        radioGroup.setOnCheckedChangeListener(this);// 当然也可以使用匿名内部类实现
     }
 
     public void setWallpaperButtonEnabled(boolean enabled) {
@@ -936,7 +941,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
                 Uri uri = data.getData();
                 addTemporaryWallpaperTile(uri, false);
                 mWallpaperScrollContainer.setVisibility(View.GONE);
-                mSetWallpaperBar.setVisibility(View.VISIBLE);
+                mSetWallpaperBarLayout.setVisibility(View.VISIBLE);
                 mCropView.setVisibility(View.VISIBLE);
                 floor=1;
             }
@@ -1255,7 +1260,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
 
         if(keyCode==KeyEvent.KEYCODE_BACK&&floor!=0){
             mWallpaperScrollContainer.setVisibility(View.VISIBLE);
-            mSetWallpaperBar.setVisibility(View.GONE);
+            mSetWallpaperBarLayout.setVisibility(View.GONE);
             mCropView.setVisibility(View.GONE);
             floor=0;
         }else{
@@ -1264,7 +1269,6 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
         return true;
     }
     @Override
-
     public boolean onOptionsItemSelected(MenuItem item)
     {
         // TODO Auto-generated method stub
@@ -1272,7 +1276,7 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
         {
             if(floor!=0){
                 mWallpaperScrollContainer.setVisibility(View.VISIBLE);
-                mSetWallpaperBar.setVisibility(View.GONE);
+                mSetWallpaperBarLayout.setVisibility(View.GONE);
                 mCropView.setVisibility(View.GONE);
                 floor=0;
                 return true;
@@ -1282,5 +1286,27 @@ public class WallpaperPickerActivity extends WallpaperCropActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+    public void setSettingType(int type){
+        settingType=type;
+    }
+    public static int getSettingType(){
+        return settingType;
+    }
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {// Q: 参数 group 暂时还没搞清什么用途
+        switch (checkedId) {
+            case R.id.rb1:
+                setSettingType(1);
+                break;
+            case R.id.rb2:
+                setSettingType(2);
+                break;
+            case R.id.rb3:
+                setSettingType(3);
+                break;
+            default:
+                break;
+        }
     }
 }
