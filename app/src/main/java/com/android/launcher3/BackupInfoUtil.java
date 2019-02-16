@@ -1,6 +1,7 @@
 package com.android.launcher3;
 
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -59,6 +60,10 @@ public class BackupInfoUtil {
             item.restored= c_favorites.getInt(c_favorites.getColumnIndex("restored"));
             item.profileId= c_favorites.getInt(c_favorites.getColumnIndex("profileId"));
             item.rank= c_favorites.getInt(c_favorites.getColumnIndex("rank"));
+
+            item.appWidgetId= c_favorites.getInt(c_favorites.getColumnIndex("appWidgetId"));
+            item.isShortcut= c_favorites.getInt(c_favorites.getColumnIndex("isShortcut"));
+            item.appWidgetProvider= c_favorites.getString(c_favorites.getColumnIndex("appWidgetProvider"));
 //             options
             //item.dropPos=null;
             iconInfoTempList.add(item);
@@ -146,9 +151,25 @@ public class BackupInfoUtil {
     static ArrayList<ItemInfo> getIconInfoFromTemp(ArrayList<IconInfoTemp> temp){
         ArrayList<ItemInfo> IconInfos=new ArrayList<ItemInfo>();
         for(IconInfoTemp mtemp : temp){
-            if(mtemp.intent==null||mtemp.intent.equals("")){
+            if(mtemp.itemType==2){
                 FolderInfo iconInfo;
                 iconInfo = new FolderInfo();
+                iconInfo.id = mtemp.id;
+                iconInfo.title = mtemp.title;
+                iconInfo.container = mtemp.container;
+                iconInfo.screenId = mtemp.screenId;
+                iconInfo.cellX = mtemp.cellX;
+                iconInfo.cellY = mtemp.cellY;
+                iconInfo.spanX = mtemp.spanX;
+                iconInfo.spanY = mtemp.spanY;
+                iconInfo.itemType = mtemp.itemType;
+                iconInfo.rank = mtemp.rank;
+                iconInfo.dropPos=null;
+                IconInfos.add(iconInfo);
+            }else if(mtemp.itemType==4){
+                LauncherAppWidgetInfo iconInfo;
+                String[] strList=mtemp.appWidgetProvider.split("/");
+                iconInfo = new LauncherAppWidgetInfo(mtemp.appWidgetId,new ComponentName(strList[0],strList[1]));
                 iconInfo.id = mtemp.id;
                 iconInfo.title = mtemp.title;
                 iconInfo.container = mtemp.container;
@@ -206,6 +227,10 @@ public class BackupInfoUtil {
         int restored;
         int profileId;
         int rank;
+
+        int appWidgetId;
+        int isShortcut;
+        String appWidgetProvider;
         public IconInfoTemp(){
             id=-1;
             title=null;
