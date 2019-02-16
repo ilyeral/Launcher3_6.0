@@ -2,7 +2,10 @@ package com.android.launcher3;
 
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
@@ -14,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.android.launcher3.LauncherAppState.getLauncherProvider;
 import static com.android.launcher3.LauncherModel.addItemToDatabase;
@@ -67,7 +71,7 @@ public class BackupInfoUtil {
 //             options
             //item.dropPos=null;
             iconInfoTempList.add(item);
-            Log.e("Gson",""+item.toString());
+            //Log.e("Gson",""+item.toString());
         }
         Gson gson = new Gson();
         String iconInfoJson=gson.toJson(iconInfoTempList);
@@ -113,6 +117,8 @@ public class BackupInfoUtil {
         model.forceReload();
     }
     public static void insertFavorites(ArrayList<ItemInfo> shortcutInfos){
+        final PackageManager packageManager = launcherAppState.getContext().getPackageManager();
+        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
         if(!shortcutInfos.isEmpty()){
             ArrayList<ItemInfo> folderList=new ArrayList<ItemInfo>();
             for(ItemInfo item : shortcutInfos){
@@ -121,7 +127,7 @@ public class BackupInfoUtil {
                     folderItem.id=item.id;
                     folderList.add(folderItem);
                     item.id=-1;
-                    Log.e("backup msg","Folder:"+item.toString());
+                    //Log.e("backup msg","Folder:"+item.toString());
                     addItemToDatabase(launcherAppState.getContext(),item,item.container,item.screenId,item.cellX,item.cellY);
                 }
             }
@@ -137,9 +143,15 @@ public class BackupInfoUtil {
                             }
                         }
                     }
-                    item.id=-1;
-                    Log.e("backup msg","ShortCut:"+item.toString());
-                    addItemToDatabase(launcherAppState.getContext(), item, item.container, item.screenId, item.cellX, item.cellY);
+                    if(item.itemType==0){
+                        String str=item.getIntent().toString();
+                        String packageName=str.split("cmp=")[1].split("/")[0];
+                        if(isAvilible(packageName,pinfo)){
+                            item.id=-1;
+                            //Log.e("backup msg","ShortCut:"+item.toString());
+                            addItemToDatabase(launcherAppState.getContext(), item, item.container, item.screenId, item.cellX, item.cellY);
+                        }
+                    }
                 }
             }
         }
@@ -209,6 +221,17 @@ public class BackupInfoUtil {
         }
         return IconInfos;
     }
+    static private boolean isAvilible( String packageName ,List<PackageInfo> pinfo){
+
+        for ( int i = 0; i < pinfo.size(); i++ )        {
+            if(pinfo.get(i).packageName.equalsIgnoreCase(packageName)){
+                pinfo.remove(pinfo.get(i));
+                return true;
+            }
+        }
+        return false;
+    }
+
     static class IconInfoTemp {
         int id;
         String title;
