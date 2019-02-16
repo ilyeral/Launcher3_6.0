@@ -29,14 +29,7 @@ import static com.android.launcher3.LauncherModel.addItemToDatabase;
 public class BackupInfoUtil {
     static LauncherProvider launcherProvider=getLauncherProvider();
     static LauncherAppState launcherAppState=LauncherAppState.getInstance();
-    static IconCache mIconCache;
-    static LauncherModel model;
-
-
-    public BackupInfoUtil(IconCache mIconCache ,LauncherModel model){
-        this.mIconCache=mIconCache;
-        this.model=model;
-    }
+    static LauncherModel model=launcherAppState.getModel();
 
 
     public static String BackupIconInfo(){

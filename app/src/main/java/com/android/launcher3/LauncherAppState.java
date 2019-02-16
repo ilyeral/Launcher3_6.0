@@ -91,7 +91,6 @@ public class LauncherAppState {
         mAppFilter = AppFilter.loadByName(sContext.getString(R.string.app_filter_class));
         mBuildInfo = BuildInfo.loadByName(sContext.getString(R.string.build_info_class));
         mModel = new LauncherModel(this, mIconCache, mAppFilter);
-        new BackupInfoUtil(mIconCache,mModel);
 
         LauncherAppsCompat.getInstance(sContext).addOnAppsChangedCallback(mModel);
 
