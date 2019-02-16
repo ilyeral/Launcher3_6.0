@@ -89,6 +89,9 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Advanceable;
@@ -125,6 +128,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -3111,9 +3116,12 @@ public class Launcher extends Activity
         folder.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
         getDragLayer().sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
         //modify add start 打开文件夹隐藏背景
-        getWorkspace().setVisibility(View.GONE);
-        getWorkspace().getPageIndicator().setVisibility(View.GONE);
-        getHotseat().setVisibility(View.GONE);
+        AlphaAnimation alphaAnimation = new AlphaAnimation(1f, 0f);
+        alphaAnimation.setDuration(300);
+        alphaAnimation.setFillAfter(true);
+        getWorkspace().startAnimation(alphaAnimation);
+        getWorkspace().getPageIndicator().startAnimation(alphaAnimation);
+        getHotseat().startAnimation(alphaAnimation);
         //modify add end
     }
 
@@ -3144,9 +3152,12 @@ public class Launcher extends Activity
         // longer occludeds the workspace items
         getDragLayer().sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
         //modify add start  关闭文件夹显示背景
-        getWorkspace().setVisibility(View.VISIBLE);
-        getWorkspace().getPageIndicator().setVisibility(View.VISIBLE);
-        getHotseat().setVisibility(View.VISIBLE);
+        AlphaAnimation alphaAnimation = new AlphaAnimation(0f, 1f);
+        alphaAnimation.setDuration(300);
+        alphaAnimation.setFillAfter(true);
+        getWorkspace().startAnimation(alphaAnimation);
+        getWorkspace().getPageIndicator().startAnimation(alphaAnimation);
+        getHotseat().startAnimation(alphaAnimation);
         //modify add end
     }
 
