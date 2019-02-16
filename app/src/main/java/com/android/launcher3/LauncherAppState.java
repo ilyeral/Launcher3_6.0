@@ -20,7 +20,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.UserManager;
 import android.util.Log;
 
 import com.android.launcher3.accessibility.LauncherAccessibilityDelegate;
@@ -92,6 +91,7 @@ public class LauncherAppState {
         mAppFilter = AppFilter.loadByName(sContext.getString(R.string.app_filter_class));
         mBuildInfo = BuildInfo.loadByName(sContext.getString(R.string.build_info_class));
         mModel = new LauncherModel(this, mIconCache, mAppFilter);
+        new BackupInfoUtil(mIconCache,mModel);
 
         LauncherAppsCompat.getInstance(sContext).addOnAppsChangedCallback(mModel);
 

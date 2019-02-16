@@ -923,7 +923,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
             info.rank = i;
             items.add(info);
         }
-
+        Log.e("addItemLocationsInDatabase"," mLauncher:"+mLauncher+" info:"+mInfo.id+" items:"+items.toString());
         LauncherModel.moveItemsInDatabase(mLauncher, items, mInfo.id, 0);
     }
 
@@ -932,8 +932,10 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         for (int i = 0; i < list.size(); i++) {
             View v = list.get(i);
             ItemInfo info = (ItemInfo) v.getTag();
+            Log.e("addItemLocationsInDatabase"," mLauncher:"+mLauncher+" info:"+info+" mInfo.id:"+mInfo.id+" info.cellX:"+info.cellX+" info.cellY:"+info.cellY);
             LauncherModel.addItemToDatabase(mLauncher, info, mInfo.id, 0,
                     info.cellX, info.cellY);
+
         }
     }
 

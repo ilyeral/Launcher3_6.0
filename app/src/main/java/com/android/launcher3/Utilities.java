@@ -839,8 +839,8 @@ public final class Utilities {
 
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        if(mtext==6||mtext==7){
-            paint.setColor(Color.rgb(0, 255, 127));
+        if(mtext==1||mtext==7){
+            paint.setColor(Color.rgb(143, 188, 143));
         }else {
             paint.setColor(Color.rgb(178, 34, 34));
         }

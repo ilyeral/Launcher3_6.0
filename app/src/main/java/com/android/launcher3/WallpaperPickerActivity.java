@@ -476,7 +476,6 @@ public class WallpaperPickerActivity extends WallpaperCropActivity implements Ra
 
         // Populate the built-in wallpapers
         ArrayList<WallpaperTileInfo> wallpapers = findBundledWallpapers();
-        Log.e("wallpapers",""+wallpapers.size());
         mWallpapersView = (GridLayout) findViewById(R.id.wallpaper_list);
         SimpleWallpapersAdapter ia = new SimpleWallpapersAdapter(getContext(), wallpapers);
         populateWallpapersFromAdapter(mWallpapersView, ia, false);

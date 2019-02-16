@@ -18,6 +18,7 @@ package com.android.launcher3;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -32,6 +33,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
 /**
  * Settings activity for Launcher. Currently implements the following setting: Allow rotation
  */
@@ -43,7 +53,6 @@ public class SettingsActivity extends Activity {
         ActionBar actionBar=getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.settings_actionbar));
-        Log.e("SettingsActivity","onCreate");
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction()
                 .replace(R.id.setting_list, new LauncherSettingsFragment())
@@ -53,7 +62,6 @@ public class SettingsActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.e("SettingsActivity","onStart");
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -65,6 +73,58 @@ public class SettingsActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    public void onClickB1(View v){
+        String str=BackupInfoUtil.BackupIconInfo();
+        save(str);
+    }
+    public void onClickB2(View v){
+        Log.e("backup","恢复");
+        BackupInfoUtil.recoverIconInfo(load());
+    }
+    public void save(String inputText){
+        FileOutputStream out = null;
+        BufferedWriter writer = null;
+        try{
+            out = openFileOutput("data", Context.MODE_PRIVATE);
+            writer = new BufferedWriter(new OutputStreamWriter(out));
+            writer.write(inputText);
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                if (writer !=null){
+                    writer.close();
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public String load(){
+        FileInputStream in = null;
+        BufferedReader reader = null;
+        StringBuilder content = new StringBuilder();
+        try{
+            in = openFileInput("data");//文件名
+            reader = new BufferedReader(new InputStreamReader(in));
+            String line = "";
+            while ((line = reader.readLine()) != null){
+                content.append(line);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            if (reader !=null){
+                try{
+                    reader.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+        return content.toString();
     }
     /**
      * This fragment shows the launcher preferences.
@@ -98,8 +158,10 @@ public class SettingsActivity extends Activity {
                     LauncherSettings.Settings.CONTENT_URI,
                     LauncherSettings.Settings.METHOD_SET_BOOLEAN,
                     preference.getKey(), extras);
+
             return true;
         }
+
         public void initRotationSetting(){
             SwitchPreference pref = (SwitchPreference) findPreference(
                     Utilities.ALLOW_ROTATION_PREFERENCE_KEY);

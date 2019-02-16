@@ -626,13 +626,22 @@ public class LauncherModel extends BroadcastReceiver
             long screenId, int cellX, int cellY) {
         if (item.container == ItemInfo.NO_ID) {
             // From all apps
+
             addItemToDatabase(context, item, container, screenId, cellX, cellY);
         } else {
             // From somewhere else
             moveItemInDatabase(context, item, container, screenId, cellX, cellY);
         }
     }
-
+    public void clearSBG(){
+        synchronized (sBgLock) {
+            sBgWorkspaceItems.clear();
+            sBgAppWidgets.clear();
+            sBgFolders.clear();
+            sBgItemsIdMap.clear();
+            sBgWorkspaceScreens.clear();
+        }
+    }
     static void checkItemInfoLocked(
             final long itemId, final ItemInfo item, StackTraceElement[] stackTrace) {
         ItemInfo modelItem = sBgItemsIdMap.get(itemId);
@@ -1457,6 +1466,233 @@ public class LauncherModel extends BroadcastReceiver
 
     public boolean isAllAppsLoaded() {
         return mAllAppsLoaded;
+    }
+    public  void saveIconInfo(){
+        final LongArrayMap<ItemInfo> sBgItemsIdMap = new LongArrayMap<>();
+        final ArrayList<LauncherAppWidgetInfo> sBgAppWidgets = new ArrayList<LauncherAppWidgetInfo>();
+        final Context context = mApp.getContext();
+        final ContentResolver contentResolver = context.getContentResolver();
+        final PackageManager manager = context.getPackageManager();
+        final LauncherAppsCompat launcherApps = LauncherAppsCompat.getInstance(context);
+
+
+        // Make sure the default workspace is loaded
+        LauncherAppState.getLauncherProvider().loadDefaultFavoritesIfNecessary();
+
+        synchronized (sBgLock) {
+            sBgWorkspaceScreens.addAll(loadWorkspaceScreensDb(context));
+
+            final ArrayList<Long> itemsToRemove = new ArrayList<Long>();
+            final ArrayList<Long> restoredRows = new ArrayList<Long>();
+            final Uri contentUri = LauncherSettings.Favorites.CONTENT_URI;
+            if (DEBUG_LOADERS) Log.d(TAG, "loading model from " + contentUri);
+            final Cursor c = contentResolver.query(contentUri, null, null, null, null);
+
+            try {
+                final int idIndex = c.getColumnIndexOrThrow(LauncherSettings.Favorites._ID);
+                final int intentIndex = c.getColumnIndexOrThrow
+                        (LauncherSettings.Favorites.INTENT);
+                final int titleIndex = c.getColumnIndexOrThrow
+                        (LauncherSettings.Favorites.TITLE);
+                final int containerIndex = c.getColumnIndexOrThrow(
+                        LauncherSettings.Favorites.CONTAINER);
+                final int itemTypeIndex = c.getColumnIndexOrThrow(
+                        LauncherSettings.Favorites.ITEM_TYPE);
+                final int appWidgetIdIndex = c.getColumnIndexOrThrow(
+                        LauncherSettings.Favorites.APPWIDGET_ID);
+                final int appWidgetProviderIndex = c.getColumnIndexOrThrow(
+                        LauncherSettings.Favorites.APPWIDGET_PROVIDER);
+                final int screenIndex = c.getColumnIndexOrThrow(
+                        LauncherSettings.Favorites.SCREEN);
+                final int cellXIndex = c.getColumnIndexOrThrow
+                        (LauncherSettings.Favorites.CELLX);
+                final int cellYIndex = c.getColumnIndexOrThrow
+                        (LauncherSettings.Favorites.CELLY);
+                final int spanXIndex = c.getColumnIndexOrThrow
+                        (LauncherSettings.Favorites.SPANX);
+                final int spanYIndex = c.getColumnIndexOrThrow(
+                        LauncherSettings.Favorites.SPANY);
+                final int rankIndex = c.getColumnIndexOrThrow(
+                        LauncherSettings.Favorites.RANK);
+                final int restoredIndex = c.getColumnIndexOrThrow(
+                        LauncherSettings.Favorites.RESTORED);
+                final int profileIdIndex = c.getColumnIndexOrThrow(
+                        LauncherSettings.Favorites.PROFILE_ID);
+                final int optionsIndex = c.getColumnIndexOrThrow(
+                        LauncherSettings.Favorites.OPTIONS);
+                final CursorIconInfo cursorIconInfo = new CursorIconInfo(c);
+
+                final LongSparseArray<UserHandleCompat> allUsers = new LongSparseArray<>();
+                for (UserHandleCompat user : mUserManager.getUserProfiles()) {
+                    allUsers.put(mUserManager.getSerialNumberForUser(user), user);
+                }
+
+                ShortcutInfo info;
+                String intentDescription;
+                LauncherAppWidgetInfo appWidgetInfo;
+                int container;
+                long id;
+                long serialNumber;
+                Intent intent;
+                UserHandleCompat user;
+
+                while (c.moveToNext()) {
+                    try {
+                        int itemType = c.getInt(itemTypeIndex);
+                        boolean restored = 0 != c.getInt(restoredIndex);
+                        boolean allowMissingTarget = false;
+                        container = c.getInt(containerIndex);
+
+                        switch (itemType) {
+                            case LauncherSettings.Favorites.ITEM_TYPE_APPLICATION:
+                            case LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT:
+                                id = c.getLong(idIndex);
+                                intentDescription = c.getString(intentIndex);
+                                serialNumber = c.getInt(profileIdIndex);
+                                user = allUsers.get(serialNumber);
+                                int disabledState = 0;
+                                if (user == null) {
+                                    // User has been deleted remove the item.
+                                    itemsToRemove.add(id);
+                                    continue;
+                                }
+                                try {
+                                    intent = Intent.parseUri(intentDescription, 0);
+                                } catch (URISyntaxException e) {
+                                    Launcher.addDumpLog(TAG,
+                                            "Invalid uri: " + intentDescription, true);
+                                    itemsToRemove.add(id);
+                                    continue;
+                                }
+
+                                boolean useLowResIcon = container >= 0 &&
+                                        c.getInt(rankIndex) >= FolderIcon.NUM_ITEMS_IN_PREVIEW;
+
+                                if (itemType ==
+                                        LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) {
+                                    info = getAppShortcutInfo(manager, intent, user, context, c,
+                                            cursorIconInfo.iconIndex, titleIndex,
+                                            allowMissingTarget, useLowResIcon);
+                                } else {
+                                    info = getShortcutInfo(c, context, titleIndex, cursorIconInfo);
+                                }
+                                if (info != null) {
+                                    info.id = id;
+                                    info.intent = intent;
+                                    info.container = container;
+                                    info.screenId = c.getInt(screenIndex);
+                                    info.cellX = c.getInt(cellXIndex);
+                                    info.cellY = c.getInt(cellYIndex);
+                                    info.rank = c.getInt(rankIndex);
+                                    info.spanX = 1;
+                                    info.spanY = 1;
+                                    info.intent.putExtra(ItemInfo.EXTRA_PROFILE, serialNumber);
+                                    info.isDisabled = disabledState;
+
+                                    switch (container) {
+                                        case LauncherSettings.Favorites.CONTAINER_DESKTOP:
+                                        case LauncherSettings.Favorites.CONTAINER_HOTSEAT:
+                                            sBgWorkspaceItems.add(info);
+                                            break;
+                                        default:
+                                            // Item is in a user folder
+                                            FolderInfo folderInfo =
+                                                    findOrMakeFolder(sBgFolders, container);
+                                            folderInfo.add(info);
+                                            break;
+                                    }
+                                    sBgItemsIdMap.put(info.id, info);
+                                } else {
+                                    throw new RuntimeException("Unexpected null ShortcutInfo");
+                                }
+                                break;
+                            case LauncherSettings.Favorites.ITEM_TYPE_FOLDER:
+                                id = c.getLong(idIndex);
+                                FolderInfo folderInfo = findOrMakeFolder(sBgFolders, id);
+
+                                // Do not trim the folder label, as is was set by the user.
+                                folderInfo.title = c.getString(titleIndex);
+                                folderInfo.id = id;
+                                folderInfo.container = container;
+                                folderInfo.screenId = c.getInt(screenIndex);
+                                folderInfo.cellX = c.getInt(cellXIndex);
+                                folderInfo.cellY = c.getInt(cellYIndex);
+                                folderInfo.spanX = 1;
+                                folderInfo.spanY = 1;
+                                folderInfo.options = c.getInt(optionsIndex);
+
+                                switch (container) {
+                                    case LauncherSettings.Favorites.CONTAINER_DESKTOP:
+                                    case LauncherSettings.Favorites.CONTAINER_HOTSEAT:
+                                        sBgWorkspaceItems.add(folderInfo);
+                                        break;
+                                }
+                                sBgItemsIdMap.put(folderInfo.id, folderInfo);
+                                sBgFolders.put(folderInfo.id, folderInfo);
+                                break;
+
+                            case LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET:
+                            case LauncherSettings.Favorites.ITEM_TYPE_CUSTOM_APPWIDGET:
+                                // Read all Launcher-specific widget details
+                                boolean customWidget = itemType ==
+                                        LauncherSettings.Favorites.ITEM_TYPE_CUSTOM_APPWIDGET;
+
+                                int appWidgetId = c.getInt(appWidgetIdIndex);
+                                serialNumber = c.getLong(profileIdIndex);
+                                String savedProvider = c.getString(appWidgetProviderIndex);
+                                id = c.getLong(idIndex);
+                                user = allUsers.get(serialNumber);
+                                if (user == null) {
+                                    itemsToRemove.add(id);
+                                    continue;
+                                }
+
+                                final int restoreStatus = c.getInt(restoredIndex);
+
+                                final LauncherAppWidgetProviderInfo provider =
+                                        LauncherModel.getProviderInfo(context,
+                                                ComponentName.unflattenFromString(savedProvider),
+                                                user);
+
+
+
+                                appWidgetInfo = new LauncherAppWidgetInfo(appWidgetId,
+                                        provider.provider);
+
+                                // The provider is available. So the widget is either
+                                // available or not available. We do not need to track
+                                // any future restore updates.
+                                int status = restoreStatus &
+                                        ~LauncherAppWidgetInfo.FLAG_RESTORE_STARTED;
+                                appWidgetInfo.restoreStatus = status;
+
+
+                                appWidgetInfo.id = id;
+                                appWidgetInfo.screenId = c.getInt(screenIndex);
+                                appWidgetInfo.cellX = c.getInt(cellXIndex);
+                                appWidgetInfo.cellY = c.getInt(cellYIndex);
+                                appWidgetInfo.spanX = c.getInt(spanXIndex);
+                                appWidgetInfo.spanY = c.getInt(spanYIndex);
+                                appWidgetInfo.user = user;
+
+                                appWidgetInfo.container = container;
+
+                                sBgItemsIdMap.put(appWidgetInfo.id, appWidgetInfo);
+                                sBgAppWidgets.add(appWidgetInfo);
+                                break;
+                        }
+                    } catch (Exception e) {
+                        Launcher.addDumpLog(TAG, "Desktop items loading interrupted", e, true);
+                    }
+                }
+            } finally {
+                if (c != null) {
+                    c.close();
+                }
+                Log.e("mes",""+sBgItemsIdMap.toString());
+                Log.e("mes",""+sBgAppWidgets.toString());
+            }
+        }
     }
 
     /**

@@ -319,6 +319,17 @@ public class LauncherProvider extends ContentProvider {
         return folderIds;
     }
 
+    public int ClearDB(){
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        try {
+            db.delete(TABLE_FAVORITES, "", null);
+            mOpenHelper.reSetMaxItemId();
+        }catch (SQLException ex) {
+            Log.e(TAG, ex.getMessage(), ex);
+        }
+        return 0;
+    }
+
     private void notifyListeners() {
         // always notify the backup agent
         LauncherBackupAgentHelper.dataChanged(getContext());
@@ -1371,6 +1382,9 @@ public class LauncherProvider extends ContentProvider {
             mMaxItemId = initializeMaxItemId(db);
             mMaxScreenId = initializeMaxScreenId(db);
             if (LOGD) Log.d(TAG, "mMaxItemId: " + mMaxItemId + " mMaxScreenId: " + mMaxScreenId);
+        }
+        public void reSetMaxItemId(){
+            mMaxItemId=0;
         }
     }
 

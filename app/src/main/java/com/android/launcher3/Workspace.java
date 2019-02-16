@@ -1641,7 +1641,8 @@ public class Workspace extends PagedView
         // We should only update the drag layer background alpha if we are not in all apps or the
         // widgets tray
         if (mState == State.NORMAL) {
-            mLauncher.getDragLayer().setBackgroundAlpha(progress == 1 ? 0 : progress * 0.8f);
+            //modify 修改左屏背景透明度 progress * 0.8f
+            mLauncher.getDragLayer().setBackgroundAlpha(progress == 1 ? 0 : progress * 0f);
         }
 
         if (mLauncher.getHotseat() != null) {
@@ -3883,6 +3884,7 @@ public class Workspace extends PagedView
                     cellX = hotseat.getCellXFromOrder((int) info.screenId);
                     cellY = hotseat.getCellYFromOrder((int) info.screenId);
                 }
+
                 LauncherModel.addItemToDatabase(mLauncher, info, container, screenId, cellX, cellY);
             }
             if (v instanceof FolderIcon) {

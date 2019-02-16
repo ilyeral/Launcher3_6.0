@@ -29,4 +29,5 @@ dependencies {
     implementation files('E:/Android/make/Launcher3/libs/protobuf-javanano-3.0.0-alpha-2.jar')
     compile 'com.android.support:recyclerview-v7:+'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation files('E:/GitHub/Launcher3_remix_1/Launcher3_6.0/libs/gson-2.8.5.jar')
 }
