@@ -16,7 +16,6 @@
 
 package com.android.launcher3;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -24,18 +23,18 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -50,9 +49,9 @@ public class SettingsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
-        ActionBar actionBar=getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.settings_actionbar));
+        TextView t=findViewById(R.id.title);
+        t.setText("桌面设置");
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction()
                 .replace(R.id.setting_list, new LauncherSettingsFragment())
@@ -63,22 +62,13 @@ public class SettingsActivity extends Activity {
     protected void onStart() {
         super.onStart();
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        // TODO Auto-generated method stub
-        if(item.getItemId() == android.R.id.home)
-        {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
     public void onClickB1(View v){
+        //new WifiAdminUtil(this).openWifi();
         String str=BackupInfoUtil.BackupIconInfo();
         save(str);
     }
     public void onClickB2(View v){
+        //new WifiAdminUtil(this).closeWifi();
         Log.e("backup","恢复");
         BackupInfoUtil.recoverIconInfo(load());
     }
@@ -135,7 +125,7 @@ public class SettingsActivity extends Activity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             Log.e("LauncherSettings","onCreate");
-            addPreferencesFromResource(R.xml.launcher_preferences);
+            addPreferencesFromResource(R.xml.settings_preferences);
 
 
             initCustomContentSetting();
@@ -151,6 +141,7 @@ public class SettingsActivity extends Activity {
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
+            //在 launcher.java  onSettingsChanged()函数进行修改后的操作
             Log.e("onPreferenceChange","preference"+preference.getKey()+newValue);
             Bundle extras = new Bundle();
             extras.putBoolean(LauncherSettings.Settings.EXTRA_VALUE, (Boolean) newValue);

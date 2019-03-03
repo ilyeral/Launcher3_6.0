@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.android.launcher3.widgets.MyPreferenceCategory
+        android:title="Wifi控制">
+        <com.android.launcher3.widgets.MySwitchPreference
+            android:key="pref_wifiController"
+            android:title="Wifi控制总开关"
+            android:summary="Wifi助手功能总开关"
+            android:defaultValue="false"
+            android:persistent="true"
+            />
+    </com.android.launcher3.widgets.MyPreferenceCategory>
+    <com.android.launcher3.widgets.MyPreferenceCategory
+        android:key="bar2"
+        android:title="功能列表">
+        <com.android.launcher3.widgets.MySwitchPreference
+            android:key="pref_wifiControl"
+            android:title="Wifi控制"
+            android:summary="控制WiFi开启或者关闭"
+            android:defaultValue="false"
+            android:persistent="true"
+            />
+    </com.android.launcher3.widgets.MyPreferenceCategory>
+</PreferenceScreen>

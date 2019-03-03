@@ -762,7 +762,7 @@ public class Launcher extends Activity
 
                 // When the user has granted permission to bind widgets, we should check to see if
                 // we can inflate the default search bar widget.
-                getOrCreateQsbBar();
+                //getOrCreateQsbBar();
             }
             return;
         } else if (requestCode == REQUEST_PICK_WALLPAPER) {
@@ -1454,7 +1454,7 @@ public class Launcher extends Activity
         dragController.addDropTarget(mWorkspace);
         if (mSearchDropTargetBar != null) {
             mSearchDropTargetBar.setup(this, dragController);
-            mSearchDropTargetBar.setQsbSearchBar(getOrCreateQsbBar());
+            //mSearchDropTargetBar.setQsbSearchBar(getOrCreateQsbBar());
         }
 
         if (getResources().getBoolean(R.bool.debug_memory_enabled)) {
@@ -3497,69 +3497,69 @@ public class Launcher extends Activity
         // NO-OP
     }
 
-    public View getOrCreateQsbBar() {
-        if (mLauncherCallbacks != null && mLauncherCallbacks.providesSearch()) {
-            return mLauncherCallbacks.getQsbBar();
-        }
-
-        if (mQsb == null) {
-            AppWidgetProviderInfo searchProvider = Utilities.getSearchWidgetProvider(this);
-            if (searchProvider == null) {
-                return null;
-            }
-
-            Bundle opts = new Bundle();
-            opts.putInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY,
-                    AppWidgetProviderInfo.WIDGET_CATEGORY_SEARCHBOX);
-
-            SharedPreferences sp = getSharedPreferences(
-                    LauncherAppState.getSharedPreferencesKey(), MODE_PRIVATE);
-            int widgetId = sp.getInt(QSB_WIDGET_ID, -1);
-            AppWidgetProviderInfo widgetInfo = mAppWidgetManager.getAppWidgetInfo(widgetId);
-            if (!searchProvider.provider.flattenToString().equals(
-                    sp.getString(QSB_WIDGET_PROVIDER, null))
-                    || (widgetInfo == null)
-                    || !widgetInfo.provider.equals(searchProvider.provider)) {
-                // A valid widget is not already bound.
-                if (widgetId > -1) {
-                    mAppWidgetHost.deleteAppWidgetId(widgetId);
-                    widgetId = -1;
-                }
-
-                // Try to bind a new widget
-                widgetId = mAppWidgetHost.allocateAppWidgetId();
-
-                if (!AppWidgetManagerCompat.getInstance(this)
-                        .bindAppWidgetIdIfAllowed(widgetId, searchProvider, opts)) {
-                    mAppWidgetHost.deleteAppWidgetId(widgetId);
-                    widgetId = -1;
-                }
-
-                sp.edit()
-                    .putInt(QSB_WIDGET_ID, widgetId)
-                    .putString(QSB_WIDGET_PROVIDER, searchProvider.provider.flattenToString())
-                    .commit();
-            }
-
-            mAppWidgetHost.setQsbWidgetId(widgetId);
-            if (widgetId != -1) {
-                mQsb = mAppWidgetHost.createView(this, widgetId, searchProvider);
-                mQsb.setId(R.id.qsb_widget);
-                mQsb.updateAppWidgetOptions(opts);
-                mQsb.setPadding(0, 0, 0, 0);
-                mSearchDropTargetBar.addView(mQsb);
-                mSearchDropTargetBar.setQsbSearchBar(mQsb);
-            }
-        }
-        return mQsb;
-    }
+//    public View getOrCreateQsbBar() {
+//        if (mLauncherCallbacks != null && mLauncherCallbacks.providesSearch()) {
+//            return mLauncherCallbacks.getQsbBar();
+//        }
+//
+//        if (mQsb == null) {
+//            AppWidgetProviderInfo searchProvider = Utilities.getSearchWidgetProvider(this);
+//            if (searchProvider == null) {
+//                return null;
+//            }
+//
+//            Bundle opts = new Bundle();
+//            opts.putInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY,
+//                    AppWidgetProviderInfo.WIDGET_CATEGORY_SEARCHBOX);
+//
+//            SharedPreferences sp = getSharedPreferences(
+//                    LauncherAppState.getSharedPreferencesKey(), MODE_PRIVATE);
+//            int widgetId = sp.getInt(QSB_WIDGET_ID, -1);
+//            AppWidgetProviderInfo widgetInfo = mAppWidgetManager.getAppWidgetInfo(widgetId);
+//            if (!searchProvider.provider.flattenToString().equals(
+//                    sp.getString(QSB_WIDGET_PROVIDER, null))
+//                    || (widgetInfo == null)
+//                    || !widgetInfo.provider.equals(searchProvider.provider)) {
+//                // A valid widget is not already bound.
+//                if (widgetId > -1) {
+//                    mAppWidgetHost.deleteAppWidgetId(widgetId);
+//                    widgetId = -1;
+//                }
+//
+//                // Try to bind a new widget
+//                widgetId = mAppWidgetHost.allocateAppWidgetId();
+//
+//                if (!AppWidgetManagerCompat.getInstance(this)
+//                        .bindAppWidgetIdIfAllowed(widgetId, searchProvider, opts)) {
+//                    mAppWidgetHost.deleteAppWidgetId(widgetId);
+//                    widgetId = -1;
+//                }
+//
+//                sp.edit()
+//                    .putInt(QSB_WIDGET_ID, widgetId)
+//                    .putString(QSB_WIDGET_PROVIDER, searchProvider.provider.flattenToString())
+//                    .commit();
+//            }
+//
+//            mAppWidgetHost.setQsbWidgetId(widgetId);
+//            if (widgetId != -1) {
+//                mQsb = mAppWidgetHost.createView(this, widgetId, searchProvider);
+//                mQsb.setId(R.id.qsb_widget);
+//                mQsb.updateAppWidgetOptions(opts);
+//                mQsb.setPadding(0, 0, 0, 0);
+//                mSearchDropTargetBar.addView(mQsb);
+//                mSearchDropTargetBar.setQsbSearchBar(mQsb);
+//            }
+//        }
+//        return mQsb;
+//    }
 
     private void reinflateQSBIfNecessary() {
         if (mQsb instanceof LauncherAppWidgetHostView &&
                 ((LauncherAppWidgetHostView) mQsb).isReinflateRequired()) {
             mSearchDropTargetBar.removeView(mQsb);
             mQsb = null;
-            mSearchDropTargetBar.setQsbSearchBar(getOrCreateQsbBar());
+            //mSearchDropTargetBar.setQsbSearchBar(getOrCreateQsbBar());
         }
     }
 
@@ -4140,7 +4140,7 @@ public class Launcher extends Activity
             mSearchDropTargetBar.removeView(mQsb);
             mQsb = null;
         }
-        mSearchDropTargetBar.setQsbSearchBar(getOrCreateQsbBar());
+        //mSearchDropTargetBar.setQsbSearchBar(getOrCreateQsbBar());
     }
 
     /**

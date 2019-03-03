@@ -5,8 +5,8 @@ android {
     buildToolsVersion "26.0.2"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     defaultConfig {
         applicationId "com.android.launcher3"
@@ -19,7 +19,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
-    lintOptions{
+    lintOptions {
         abortOnError false
     }
 }
@@ -30,4 +30,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:+'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation files('E:/GitHub/Launcher3_remix_1/Launcher3_6.0/libs/gson-2.8.5.jar')
+    implementation 'com.android.support:appcompat-v7:+'
+    implementation files('E:/GitHub/Launcher3_remix_1/Launcher3_6.0/libs/okhttp-3.9.0.jar')
+    implementation files('E:/GitHub/Launcher3_remix_1/Launcher3_6.0/libs/okio-1.9.0.jar')
 }

@@ -74,6 +74,7 @@
                 android:textAppearance="@android:style/TextAppearance"
                 android:textColor="#dd202020"
                 android:textSize="13sp"
+                android:text="WIFI 控制"
                 tools:layout_editor_absoluteX="247dp"
                 tools:layout_editor_absoluteY="16dp" />
 
@@ -86,26 +87,24 @@
                 android:textAppearance="@android:style/TextAppearance"
                 android:textColor="#cccccc"
                 android:textSize="11sp"
+                android:text="控制WIFI 功能"
                 tools:layout_editor_absoluteX="247dp"
                 tools:layout_editor_absoluteY="479dp" />
 
         </LinearLayout>
-
         <LinearLayout
             android:id="@+id/constraintLayout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal">
 
-            <Switch
-                android:id="@+id/switchWidget"
+            <ImageView
+                android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_weight="1"
                 android:layout_gravity="center_vertical"
-                android:thumb="@drawable/switch_thumb"
-                android:track="@drawable/switch_track_selector"/>
+                android:src="@drawable/widget_resize_shadow" />
         </LinearLayout>
         <!-- Preference should place its actual preference widget here. -->
         <LinearLayout
@@ -117,13 +116,13 @@
             android:paddingStart="16dp"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:orientation="vertical"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:background="#aae2e2e2"></LinearLayout>
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0.5dp"-->
+        <!--android:orientation="vertical"-->
+        <!--android:layout_marginLeft="15dp"-->
+        <!--android:layout_marginRight="15dp"-->
+        <!--android:background="#aae2e2e2"></LinearLayout>-->
 
 
 </LinearLayout>

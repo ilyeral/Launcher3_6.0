@@ -28,7 +28,7 @@ public class MySwitchPreference extends SwitchPreference {
     public MySwitchPreference(Context context, AttributeSet attrs, int defStyleAttr) {
 
         super(context, attrs, defStyleAttr);
-        setLayoutResource(R.layout.preference);//设置自己的更布局
+        setLayoutResource(R.layout.preference_switch);//设置自己的更布局
     }
 
     public MySwitchPreference(Context context, AttributeSet attrs) {
@@ -89,29 +89,29 @@ public class MySwitchPreference extends SwitchPreference {
             }
         }
 
-        final ImageView imageView = (ImageView) view.findViewById(R.id.icon);
-        try {//反射资源id
-            Class clazz = getClass();
-            Field Field = clazz.getDeclaredField("mIconResId");
-            Field.setAccessible(true);
-            int mIconResId = (int) Field.get(this);
-            if (imageView != null) {
-                if (mIconResId != 0 || mIcon != null) {
-                    if (mIcon == null) {
-                        mIcon = getContext().getResources().getDrawable(mIconResId);
-                    }
-                    if (mIcon != null) {
-                        imageView.setImageDrawable(mIcon);
-                    }
-                }
-                imageView.setVisibility(mIcon != null ? View.VISIBLE : View.GONE);
-            }
-
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+//        final ImageView imageView = (ImageView) view.findViewById(R.id.icon);
+//        try {//反射资源id
+//            Class clazz = getClass();
+//            Field Field = clazz.getDeclaredField("mIconResId");
+//            Field.setAccessible(true);
+//            int mIconResId = (int) Field.get(this);
+//            if (imageView != null) {
+//                if (mIconResId != 0 || mIcon != null) {
+//                    if (mIcon == null) {
+//                        mIcon = getContext().getResources().getDrawable(mIconResId);
+//                    }
+//                    if (mIcon != null) {
+//                        imageView.setImageDrawable(mIcon);
+//                    }
+//                }
+//                imageView.setVisibility(mIcon != null ? View.VISIBLE : View.GONE);
+//            }
+//
+//        } catch (NoSuchFieldException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
 
         View checkableView = view.findViewById(R.id.switchWidget);
         if (checkableView != null && checkableView instanceof Checkable) {

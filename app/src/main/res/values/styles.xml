@@ -122,5 +122,15 @@
         <item name="android:textColor">#ffffffff</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
-    <!-- Base application theme. -->
+    <!--&lt;!&ndash; Base application theme. &ndash;&gt;-->
+
+    <style name="settingTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="windowNoTitle">true</item>
+        <!--<item name="android:windowFullscreen">true</item>-->
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="colorPrimary">#3042a6</item>
+        <item name="colorPrimaryDark">#303F9F</item>
+        <item name="colorAccent">#FF4081</item>
+    </style>
 </resources>

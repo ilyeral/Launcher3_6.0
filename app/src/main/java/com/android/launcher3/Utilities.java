@@ -121,6 +121,8 @@ public final class Utilities {
 
     public static final String ALLOW_ROTATION_PREFERENCE_KEY = "pref_allowRotation";
     public static final String ALLOW_CUSTOM_CONTENT_KEY = "pref_allowCustomContent";
+    public static final String ALLOW_WIFI_CONTROLLER_KEY = "pref_wifiController";
+    public static final String WIFI_CONTROL_KEY = "pref_wifiControl";
 
     public static boolean isPropertyEnabled(String propertyName) {
         return Log.isLoggable(propertyName, Log.VERBOSE);
